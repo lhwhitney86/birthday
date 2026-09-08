@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aniversário Paúba · Planejamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --areia:#F4EEE1; --areia-2:#EBE1CC; --carvao:#1B1D19; --tinta:#2C2E29;
+    --mar:#1C6E71; --mar-esc:#124B4D; --coral:#D96C4A; --coral-esc:#A84A2E;
+    --musgo:#7A8B4F; --dourado:#C79A3B; --cinza:#8A8776; --linha:#DDD3BC;
+    --branco:#FCFAF4; --vermelho:#B0432F; --verde-ok:#4C7A3E;
+    --sombra:0 1px 3px rgba(27,29,25,.05);
+    --f-disp:'Fraunces',Georgia,serif;
+    --f-body:'Inter',system-ui,sans-serif;
+    --f-data:'Space Grotesk','Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--f-body);
+    background:var(--areia); color:var(--tinta); line-height:1.6;
+    font-size:16px; padding:0 0 4rem; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 12% 6%, rgba(28,110,113,.055), transparent 42%),
+                     radial-gradient(circle at 90% 3%, rgba(217,108,74,.05), transparent 40%);
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 1.5rem}
+  .util{font-family:var(--f-body)}
+  .num{font-variant-numeric:tabular-nums;font-family:var(--f-data)}
+
+  /* ---- Hero ---- */
+  header.hero{padding:3.25rem 0 2rem;position:relative;overflow:hidden}
+  .eyebrow{font-family:var(--f-data);font-size:12px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--mar);font-weight:500;margin-bottom:1rem}
+  h1{font-family:var(--f-disp);font-size:clamp(2.6rem,7.5vw,4.6rem);line-height:.96;font-weight:600;
+    letter-spacing:-.025em;color:var(--carvao);font-optical-sizing:auto}
+  h1 em{font-style:italic;color:var(--coral);font-weight:500}
+  .datesub{font-family:var(--f-body);margin-top:1.15rem;font-size:1rem;color:var(--tinta);
+    display:flex;flex-wrap:wrap;gap:.4rem 1.6rem}
+  .datesub b{color:var(--mar-esc);font-weight:600}
+  .wave{display:block;width:100%;height:22px;margin-top:1.6rem}
+
+  /* ---- Stat band ---- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;
+    background:var(--linha);border:1px solid var(--linha);border-radius:16px;overflow:hidden;margin:.5rem 0 1rem}
+  .stat{background:var(--branco);padding:1.3rem 1.4rem}
+  .stat .lab{font-family:var(--f-data);font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--cinza);margin-bottom:.5rem;font-weight:500}
+  .stat .val{font-family:var(--f-data);font-size:2rem;font-weight:500;letter-spacing:-.02em}
+  .stat .val small{font-size:.9rem;font-weight:400}
+  .stat.pago .val{color:var(--verde-ok)} .stat.falta .val{color:var(--coral-esc)}
+  .stat.saldo.neg .val{color:var(--vermelho)}
+
+  /* progress + teto */
+  .tetobar{background:var(--branco);border:1px solid var(--linha);border-radius:16px;padding:1.3rem 1.5rem;margin-bottom:1.9rem}
+  .tetorow{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;margin-bottom:.95rem}
+  .tetorow label{font-family:var(--f-data);font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--cinza);font-weight:500}
+  .tetorow input{font-family:var(--f-data);font-variant-numeric:tabular-nums;
+    font-size:1.2rem;font-weight:500;color:var(--carvao);border:none;border-bottom:2px solid var(--dourado);
+    background:transparent;width:130px;padding:.15rem .1rem;text-align:right}
+  .tetorow input:focus{outline:none;border-color:var(--mar)}
+  .track{height:12px;border-radius:8px;background:var(--areia-2);overflow:hidden;display:flex}
+  .track .fill-pago{background:var(--mar)} .track .fill-prev{background:var(--coral);opacity:.55}
+  .track > span{display:block;height:100%;transition:width .4s ease}
+  .legenda{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;margin-top:.75rem;font-family:var(--f-body);font-size:12.5px;color:var(--tinta)}
+  .legenda span{display:inline-flex;align-items:center;gap:.5rem}
+  .legenda i{width:13px;height:13px;border-radius:4px;flex:0 0 auto;display:inline-block}
+  .lg-pago{background:var(--mar)}
+  .lg-prev{background:var(--coral);opacity:.55}
+  .lg-livre{background:var(--areia-2);border:1px solid var(--linha)}
+  .tetomsg{font-family:var(--f-body);margin-top:.8rem;font-size:.95rem;display:flex;align-items:center;gap:.5rem}
+  .tetomsg.ok{color:var(--verde-ok)} .tetomsg.over{color:var(--vermelho);font-weight:600}
+  .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .dot.ok{background:var(--verde-ok)} .dot.over{background:var(--vermelho)}
+
+  /* ---- Sections ---- */
+  section{margin-bottom:2.5rem}
+  .sechead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:1.1rem;
+    border-bottom:1.5px solid var(--carvao);padding-bottom:.6rem}
+  .sechead h2{font-family:var(--f-disp);font-size:1.85rem;font-weight:500;letter-spacing:-.02em;color:var(--carvao)}
+  .sechead .meta{font-family:var(--f-data);font-size:12px;letter-spacing:.04em;color:var(--cinza)}
+
+  /* table */
+  .tablecard{background:var(--branco);border:1px solid var(--linha);border-radius:16px;overflow:hidden;box-shadow:var(--sombra)}
+  table{width:100%;border-collapse:collapse;font-size:1rem}
+  thead th{font-family:var(--f-data);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--cinza);text-align:left;padding:.95rem 1rem;background:var(--areia-2);font-weight:500;white-space:nowrap}
+  th.r,td.r{text-align:right}
+  tbody tr{border-top:1px solid var(--linha)}
+  tbody tr:first-child{border-top:none}
+  tbody td{padding:.5rem .6rem;vertical-align:middle}
+  td .cell{width:100%;border:1px solid transparent;border-radius:9px;padding:.6rem .7rem;background:transparent;
+    font-family:var(--f-body);font-size:1rem;color:var(--tinta);transition:border-color .15s,background .15s}
+  td .cell.num{font-family:var(--f-data);font-variant-numeric:tabular-nums;text-align:right;
+    font-size:.95rem;padding:.6rem .5rem}
+  td .cell:hover{border-color:var(--linha)}
+  td .cell:focus{outline:none;border-color:var(--mar);background:#fff;box-shadow:0 0 0 3px rgba(28,110,113,.12)}
+  td.calc{font-family:var(--f-data);font-variant-numeric:tabular-nums;text-align:right;font-size:.95rem;
+    font-weight:500;color:var(--carvao);padding-right:1rem;white-space:nowrap}
+  td.falta-c{color:var(--coral-esc)}
+  select.cell{appearance:none;cursor:pointer;font-family:var(--f-body);font-size:.95rem;padding-left:.7rem;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A8776' fill='none' stroke-width='1.4'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right .55rem center;padding-right:1.5rem}
+  .pill{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--f-data);
+    font-size:11px;letter-spacing:.03em;padding:.25rem .7rem;border-radius:20px;font-weight:500;text-transform:uppercase}
+  .pill.pago{background:rgba(76,122,62,.14);color:var(--verde-ok)}
+  .pill.parcial{background:rgba(199,154,59,.18);color:#8a6a1e}
+  .pill.pendente{background:rgba(217,108,74,.16);color:var(--coral-esc)}
+  .pill.agendado{background:rgba(28,110,113,.13);color:var(--mar-esc)}
+  .del{border:none;background:transparent;color:var(--cinza);cursor:pointer;font-size:1.1rem;line-height:1;
+    padding:.25rem .45rem;border-radius:6px;transition:all .15s}
+  .del:hover{background:rgba(176,67,47,.12);color:var(--vermelho)}
+  tfoot td{border-top:1.5px solid var(--carvao);padding:.95rem 1rem;font-family:var(--f-data);
+    font-variant-numeric:tabular-nums;font-weight:600;font-size:1.05rem}
+  tfoot td.lab{letter-spacing:.07em;text-transform:uppercase;font-size:12px;font-weight:500;color:var(--cinza)}
+  .addrow{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;border:1.5px dashed var(--mar);
+    background:transparent;color:var(--mar-esc);font-family:var(--f-body);font-size:13px;
+    font-weight:600;letter-spacing:.02em;padding:.65rem 1.15rem;border-radius:10px;cursor:pointer;transition:all .15s}
+  .addrow:hover{background:var(--mar);color:#fff;border-color:var(--mar)}
+  .obs-row td{padding:0 .6rem .7rem 1.5rem}
+  .obs{width:100%;border:none;background:transparent;font-family:var(--f-body);
+    font-size:13px;color:var(--cinza);font-style:italic;padding:.2rem .4rem;resize:none;border-radius:7px;line-height:1.5}
+  .obs:focus{outline:none;background:#fff;box-shadow:0 0 0 2px rgba(28,110,113,.12);color:var(--tinta);font-style:normal}
+
+  /* toolbar */
+  .toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:flex-end;margin:1.5rem 0 .5rem}
+  .btn{font-family:var(--f-body);font-size:13px;font-weight:600;letter-spacing:.02em;
+    padding:.65rem 1.2rem;border-radius:10px;cursor:pointer;border:1.5px solid var(--carvao);
+    background:var(--carvao);color:var(--branco);transition:all .15s}
+  .btn:hover{background:var(--mar);border-color:var(--mar)}
+  .btn.ghost{background:transparent;color:var(--carvao)}
+  .btn.ghost:hover{background:var(--areia-2);color:var(--carvao)}
+  .saved{font-family:var(--f-data);font-size:12px;color:var(--cinza);margin-right:auto;
+    display:flex;align-items:center;gap:.4rem;opacity:0;transition:opacity .3s}
+  .saved.show{opacity:1}
+  .saved .dot{background:var(--verde-ok)}
+
+  /* ---- Tabs ---- */
+  .tabs{display:flex;gap:.4rem;margin:.5rem 0 1.75rem;border-bottom:1.5px solid var(--linha)}
+  .tab{font-family:var(--f-data);font-size:13px;font-weight:500;letter-spacing:.03em;
+    padding:.7rem 1.15rem;border:none;background:transparent;color:var(--cinza);cursor:pointer;
+    border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:all .15s;text-transform:uppercase}
+  .tab:hover{color:var(--tinta)}
+  .tab.on{color:var(--carvao);border-bottom-color:var(--coral)}
+  .tabpane{display:none} .tabpane.on{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* ---- RSVP dashboard ---- */
+  .rsvp-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+    background:var(--linha);border:1px solid var(--linha);border-radius:16px;overflow:hidden;margin-bottom:1.5rem}
+  .rsvp-hero .stat .val{font-size:2.4rem}
+  .rsvp-hero .stat .val.mar{color:var(--mar)} .rsvp-hero .stat .val.coral{color:var(--coral-esc)}
+  .rsvp-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+  @media(max-width:760px){.rsvp-grid{grid-template-columns:1fr}}
+  .panel{background:var(--branco);border:1px solid var(--linha);border-radius:16px;padding:1.4rem 1.5rem;box-shadow:var(--sombra)}
+  .panel h3{font-family:var(--f-disp);font-size:1.3rem;font-weight:500;letter-spacing:-.01em;margin-bottom:1rem;color:var(--carvao)}
+  .bar-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;font-size:.9rem}
+  .bar-row .lab{font-family:var(--f-data);width:96px;flex:0 0 auto;color:var(--tinta);white-space:nowrap}
+  .bar-row .bar-track{flex:1;height:22px;background:var(--areia-2);border-radius:6px;overflow:hidden}
+  .bar-row .bar-fill{height:100%;background:var(--mar);border-radius:6px;display:flex;align-items:center;
+    justify-content:flex-end;padding-right:.5rem;color:#fff;font-family:var(--f-data);font-size:12px;font-weight:500;min-width:24px;transition:width .5s ease}
+  .diet-item{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-top:1px solid var(--linha);font-size:.92rem}
+  .diet-item:first-child{border-top:none}
+  .diet-item .who{font-weight:500;color:var(--carvao)}
+  .diet-item .what{font-family:var(--f-body);color:var(--coral-esc);text-align:right}
+  .search-box{width:100%;font-family:var(--f-body);font-size:.95rem;padding:.7rem .9rem;border:1px solid var(--linha);
+    border-radius:10px;background:var(--branco);margin-bottom:.9rem;color:var(--tinta)}
+  .search-box:focus{outline:none;border-color:var(--mar);box-shadow:0 0 0 3px rgba(28,110,113,.1)}
+  .guest-table{width:100%;border-collapse:collapse;font-size:.92rem}
+  .guest-table th{font-family:var(--f-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--cinza);text-align:left;padding:.6rem .7rem;background:var(--areia-2);font-weight:500;position:sticky;top:0}
+  .guest-table td{padding:.6rem .7rem;border-top:1px solid var(--linha);vertical-align:top}
+  .guest-table tr:hover td{background:var(--areia)}
+  .gt-name{font-weight:500;color:var(--carvao)}
+  .gt-sub{font-family:var(--f-data);font-size:11px;color:var(--cinza)}
+  .chip{display:inline-block;font-family:var(--f-data);font-size:10px;letter-spacing:.03em;padding:.15rem .5rem;
+    border-radius:12px;background:rgba(28,110,113,.12);color:var(--mar-esc);text-transform:uppercase;font-weight:500}
+  .chip.diet{background:rgba(217,108,74,.16);color:var(--coral-esc)}
+  .table-scroll{max-height:520px;overflow-y:auto;border:1px solid var(--linha);border-radius:14px}
+  .note-cell{font-style:italic;color:var(--cinza);font-size:.85rem;max-width:260px}
+  /* group visibility in guest table */
+  .grp-head td{background:var(--areia-2)!important;padding:.5rem .7rem;border-top:2px solid var(--linha)}
+  .grp-head .gh{display:flex;align-items:center;gap:.6rem;font-family:var(--f-data);font-size:11px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--mar-esc);font-weight:500}
+  .grp-head .gh .swatch{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+  .grp-head .gh .cnt{color:var(--cinza);font-weight:400}
+  .guest-table tr.gmember td:first-child{border-left:3px solid var(--gcol,transparent)}
+  .kid-badge{display:inline-block;font-family:var(--f-data);font-size:10px;padding:.1rem .45rem;border-radius:10px;
+    background:rgba(122,139,79,.18);color:#54632f;margin-left:.4rem;font-weight:500}
+  .age-bar-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem;font-size:.9rem}
+  .age-bar-row .lab{font-family:var(--f-body);width:130px;flex:0 0 auto;color:var(--tinta)}
+  .age-bar-row .bar-track{flex:1;height:20px;background:var(--areia-2);border-radius:6px;overflow:hidden}
+  .age-bar-row .bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;
+    padding-right:.5rem;color:#fff;font-family:var(--f-data);font-size:12px;font-weight:500;min-width:20px;transition:width .5s}
+  footer{text-align:center;font-family:var(--f-data);font-size:12px;color:var(--cinza);
+    margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--linha)}
+  .flag{font-size:11px;background:rgba(176,67,47,.1);color:var(--vermelho);border-radius:6px;
+    padding:.1rem .45rem;font-family:var(--f-data);font-weight:600;letter-spacing:.02em}
+
+  @media (max-width:640px){
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tbody tr{padding:.6rem 0}
+    td{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.25rem .8rem}
+    td::before{content:attr(data-l);font-family:var(--f-data);font-size:11px;
+      letter-spacing:.08em;text-transform:uppercase;color:var(--cinza);flex:0 0 auto}
+    td .cell{width:auto;flex:1;text-align:right}
+    td.calc{justify-content:space-between} td.calc::after{}
+    .obs-row td{padding:.2rem .8rem .6rem}
+    td.act{justify-content:flex-end}
+    tfoot td{display:flex;justify-content:space-between}
+    tfoot td.lab::before{content:none}
+    td[data-l]::before{content:attr(data-l)}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Praia de Paúba · São Sebastião</div>
+  <h1>Aniversário <em>do Luiz</em></h1>
+  <div class="datesub">
+    <span><b>Evento</b> 19 set 2026</span>
+    <span><b>Casa</b> check-in 18 · check-out 20</span>
+    <span><b>Convidados</b> <input id="conv" class="num" style="width:44px;border:none;border-bottom:2px solid var(--dourado);background:transparent;font-weight:600;text-align:center;color:var(--mar-esc)" value="60"> no dia</span>
+  </div>
+  <svg class="wave" viewBox="0 0 1000 22" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 14 Q 62 4 125 14 T 250 14 T 375 14 T 500 14 T 625 14 T 750 14 T 875 14 T 1000 14" fill="none" stroke="#1C6E71" stroke-width="2" opacity=".5"/>
+    <path d="M0 18 Q 62 9 125 18 T 250 18 T 375 18 T 500 18 T 625 18 T 750 18 T 875 18 T 1000 18" fill="none" stroke="#D96C4A" stroke-width="2" opacity=".4"/>
+  </svg>
+</header>
+
+<div class="tabs">
+  <button class="tab on" data-tab="planner">Orçamento</button>
+  <button class="tab" data-tab="rsvp">Convidados · RSVP</button>
+</div>
+
+<div class="tabpane on" id="tab-planner">
+<div class="stats">
+  <div class="stat"><div class="lab">Custo previsto</div><div class="val num">R$ <span id="s-prev">0</span></div></div>
+  <div class="stat pago"><div class="lab">Já pago</div><div class="val num">R$ <span id="s-pago">0</span></div></div>
+  <div class="stat falta"><div class="lab">Falta pagar</div><div class="val num">R$ <span id="s-falta">0</span></div></div>
+  <div class="stat saldo" id="s-saldo-card"><div class="lab">Saldo do teto</div><div class="val num">R$ <span id="s-saldo">0</span></div></div>
+</div>
+
+<div class="tetobar">
+  <div class="tetorow">
+    <label for="teto">Teto de orçamento</label>
+    <span class="num" style="font-size:1.15rem">R$</span>
+    <input id="teto" class="num" value="35400" inputmode="numeric">
+    <span class="num" style="margin-left:auto;color:var(--cinza);font-size:.9rem">Custo por convidado: <b id="s-perhead" style="color:var(--carvao)">R$ 0</b></span>
+  </div>
+  <div class="track" aria-hidden="true">
+    <span class="fill-pago" id="bar-pago"></span>
+    <span class="fill-prev" id="bar-prev"></span>
+  </div>
+  <div class="legenda">
+    <span><i class="lg-pago"></i>Já pago</span>
+    <span><i class="lg-prev"></i>Contratado, falta pagar</span>
+    <span><i class="lg-livre"></i>Livre no teto</span>
+  </div>
+  <div class="tetomsg" id="tetomsg"><span class="dot"></span><span id="tetomsg-t"></span></div>
+</div>
+
+<section>
+  <div class="sechead"><h2>Fornecedores &amp; itens</h2><span class="meta">clique em qualquer campo para editar</span></div>
+  <div class="tablecard">
+    <table>
+      <thead><tr>
+        <th style="width:32%">Item</th><th style="width:18%">Categoria</th><th class="r" style="width:56px">Qtd</th>
+        <th class="r" style="width:110px">Valor unit.</th><th class="r" style="width:110px">Previsto</th>
+        <th class="r" style="width:110px">Pago</th><th class="r" style="width:100px">Falta</th>
+        <th style="width:40px"></th>
+      </tr></thead>
+      <tbody id="itens"></tbody>
+      <tfoot><tr>
+        <td class="lab" colspan="4">Total</td>
+        <td class="r num" id="t-prev">0</td>
+        <td class="r num" id="t-pago">0</td>
+        <td class="r num" id="t-falta">0</td>
+        <td></td>
+      </tr></tfoot>
+    </table>
+  </div>
+  <button class="addrow" id="add-item">+ adicionar item</button>
+</section>
+
+<section>
+  <div class="sechead"><h2>Cronograma de pagamentos</h2><span class="meta">total pago: <b class="num" id="pg-total" style="color:var(--verde-ok)">R$ 0</b></span></div>
+  <div class="tablecard">
+    <table>
+      <thead><tr>
+        <th style="width:120px">Data</th><th style="width:34%">Descrição</th><th>Fornecedor</th>
+        <th class="r" style="width:110px">Valor</th><th style="width:130px">Status</th><th style="width:40px"></th>
+      </tr></thead>
+      <tbody id="pags"></tbody>
+    </table>
+  </div>
+  <button class="addrow" id="add-pag">+ adicionar pagamento</button>
+</section>
+
+<div class="toolbar">
+  <span class="saved" id="saved"><span class="dot"></span>salvo no navegador</span>
+  <button class="btn ghost" id="export">Exportar backup</button>
+  <button class="btn ghost" id="import">Importar backup</button>
+  <button class="btn ghost" id="reset" style="border-color:var(--vermelho);color:var(--vermelho)">Restaurar dados dos contratos</button>
+  <input type="file" id="file" accept="application/json" hidden>
+</div>
+</div><!-- /tab-planner -->
+
+<div class="tabpane" id="tab-rsvp">
+  <div class="rsvp-hero">
+    <div class="stat"><div class="lab">Confirmados</div><div class="val num mar" id="r-total">0</div></div>
+    <div class="stat"><div class="lab">Grupos / famílias</div><div class="val num" id="r-groups">0</div></div>
+    <div class="stat"><div class="lab">Restrições alimentares</div><div class="val num coral" id="r-diet">0</div></div>
+    <div class="stat"><div class="lab">Recados deixados</div><div class="val num" id="r-notes">0</div></div>
+  </div>
+
+  <div class="rsvp-grid">
+    <div class="panel">
+      <h3>Tamanho dos grupos</h3>
+      <div id="r-sizes"></div>
+    </div>
+    <div class="panel">
+      <h3>Atenção na cozinha</h3>
+      <div id="r-dietlist"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:1.5rem">
+    <h3>Faixa etária das crianças</h3>
+    <div id="r-ages"></div>
+    <div id="r-ages-summary" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--linha);font-size:.9rem;color:var(--tinta);line-height:1.7"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Lista de convidados confirmados</h3>
+    <input type="text" class="search-box" id="r-search" placeholder="Buscar por nome, e-mail ou restrição…">
+    <div class="table-scroll">
+      <table class="guest-table">
+        <thead><tr>
+          <th style="width:28%">Nome</th><th style="width:30%">E-mail</th><th style="width:20%">Telefone</th><th style="width:22%">Restrição</th>
+        </tr></thead>
+        <tbody id="r-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /tab-rsvp -->
+
+<footer>
+  Planejamento salvo automaticamente neste navegador · praia de Paúba, 19 de setembro de 2026
+</footer>
+</div>
+
+<script>
+const CATS = ["Local & Estrutura","Buffet & Bebidas","Bolo & Doces","Decoração","Música & Som","Fotografia","Convites & Papelaria","Lembrancinhas","Outros"];
+const STATUS_P = ["Agendado","Pago","Atrasado"];
+const KEY = "festa_pauba_v4";
+
+const SEED = {
+  conv: 60, teto: 35400,
+  itens: [
+    {item:"Locação Casa Paúba House (2 diárias)",cat:"Local & Estrutura",qtd:1,vu:9300,pago:4650,obs:"18–20/09. R$4.650 na assinatura + R$4.650 até 17/09. Máx 20 hóspedes; evento p/ ~40 exige autorização escrita do locador."},
+    {item:"Assessoria de eventos (Maria Carolina)",cat:"Local & Estrutura",qtd:1,vu:6000,pago:6000,obs:"3× R$2.000 (01/04, 01/06, 01/09): TODAS pagas. Equipe p/ até 60 convidados; +R$550 por assistente extra."},
+    {item:"Buffet churrasco (Ciência do Churrasco)",cat:"Buffet & Bebidas",qtd:1,vu:5980,pago:2990,obs:"50/60 pessoas. 50% pago + 50% no dia. NÃO inclui pratos, copos, talheres nem descartáveis."},
+    {item:"DJ Rodrigo Silva",cat:"Música & Som",qtd:1,vu:2000,pago:0,obs:"13:00–20:00. Pagar integral entre 13–18/09. Hora extra R$500 (máx 2h)."},
+    {item:"Banda (Ronaldo Reinaldo Tavares)",cat:"Música & Som",qtd:1,vu:1900,pago:760,obs:"40% (R$760) pago + 60% (R$1.140) até ~12/09."},
+    {item:"Descartáveis: pratos, copos, talheres",cat:"Buffet & Bebidas",qtd:40,vu:0,pago:0,obs:"Por conta do contratante — buffet não fornece. Preencher valor unitário estimado."},
+    {item:"Bebidas",cat:"Buffet & Bebidas",qtd:1,vu:0,pago:0,obs:"Preencher orçamento."},
+    {item:"Bar open bar (Agência Easy Party)",cat:"Buffet & Bebidas",qtd:1,vu:4990,pago:4990,obs:"CONTRATO ASSINADO. Open bar completo 6h: 2 bartenders, 2 módulos, bebidas, frutas, gelo, transporte. PAGO 100%. Cobre 50 convidados; extra R$79,90/convidado (você tem 65)."},
+    {item:"Transporte van (Transline / Nelia)",cat:"Local & Estrutura",qtd:1,vu:1400,pago:1400,obs:"CONTRATO ASSINADO. Van executiva 18 lugares, Maresias↔Paúba, 12h–20h. PAGO 100%. Hora extra R$200 após 20h."},
+    {item:"Bolo (Doceria Claritas)",cat:"Bolo & Doces",qtd:1,vu:640,pago:0,obs:"Doceria Claritas. Sugestões: Franui / pistache com frutas vermelhas. Dimensionar p/ ~40 fatias (60 convidados com churrasco e outros doces)."},
+    {item:"Decoração fixa 40 anos (Sueli)",cat:"Decoração",qtd:1,vu:900,pago:0,obs:"Decoração fixa de 40 anos — Sueli. Retirar todo material ao fim; casa cobra R$300 se ficar."},
+    {item:"Fotografia (Olhar de Luii - Luiza de Andrade)",cat:"Fotografia",qtd:1,vu:1200,pago:600,obs:"CONTRATO ASSINADO. ~6h, fotos ilimitadas e tratadas, entrega digital em até 30 dias. 50% (R$600) pago na reserva + 50% (R$600) até o evento. Álbum opcional +R$300."},
+    {item:"Copos personalizados \"Rick 40\" (lembrança)",cat:"Lembrancinhas",qtd:1,vu:650,pago:650,obs:"CriaCopo — 150 copos 300ml personalizados. PAGO R$650 (Pix). Entrega 11/09. Frete grátis (desconto)."}
+  ],
+  pags: [
+    {data:"2026-04-01",desc:"Assessoria — 1ª parcela (sinal)",forn:"Maria Carolina P. Bueno",val:2000,st:"Pago"},
+    {data:"2026-04-23",desc:"Banda — sinal 40%",forn:"Ronaldo R. Tavares",val:760,st:"Pago"},
+    {data:"2026-04-27",desc:"Buffet churrasco — 50%",forn:"Ciência do Churrasco",val:2990,st:"Pago"},
+    {data:"2026-06-01",desc:"Assessoria — 2ª parcela",forn:"Maria Carolina P. Bueno",val:2000,st:"Pago"},
+    {data:"2026-09-04",desc:"Locação casa — assinatura",forn:"Alexandre F. Tenório",val:4650,st:"Pago"},
+    {data:"2026-09-01",desc:"Assessoria — 3ª parcela",forn:"Maria Carolina P. Bueno",val:2000,st:"Pago"},
+    {data:"2026-09-02",desc:"Bar open bar — 100%",forn:"Agência Easy Party",val:4990,st:"Pago"},
+    {data:"2026-08-20",desc:"Fotografia — sinal 50%",forn:"Olhar de Luii (Luiza)",val:600,st:"Pago"},
+    {data:"2026-08-29",desc:"Transporte van — 100%",forn:"Transline / Nelia",val:1400,st:"Pago"},
+    {data:"2026-09-19",desc:"Fotografia — saldo 50%",forn:"Olhar de Luii (Luiza)",val:600,st:"Agendado"},
+    {data:"2026-09-12",desc:"Banda — saldo 60%",forn:"Ronaldo R. Tavares",val:1140,st:"Agendado"},
+    {data:"2026-09-15",desc:"DJ — pagamento integral",forn:"Rodrigo da Silva",val:2000,st:"Agendado"},
+    {data:"2026-09-17",desc:"Locação casa — saldo",forn:"Alexandre F. Tenório",val:4650,st:"Agendado"},
+    {data:"2026-09-19",desc:"Buffet churrasco — 50% (no dia)",forn:"Ciência do Churrasco",val:2990,st:"Agendado"},
+    {data:"2026-09-08",desc:"Copos personalizados (lembrança)",forn:"CriaCopo",val:650,st:"Pago"}
+  ]
+};
+
+let D = load();
+function load(){ try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):structuredClone(SEED);}catch(e){return structuredClone(SEED);} }
+let saveT;
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(D));flashSaved();}catch(e){} }
+function flashSaved(){const el=document.getElementById('saved');el.classList.add('show');clearTimeout(saveT);saveT=setTimeout(()=>el.classList.remove('show'),1400);}
+
+const brl = n => Math.round(n).toLocaleString('pt-BR');
+const parseNum = s => { const n = parseFloat(String(s).replace(/[^\d,-]/g,'').replace('.','').replace(',','.')); return isNaN(n)?0:n; };
+const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function itemStatus(it){ const prev=it.qtd*it.vu; if(prev===0) return {c:'pendente',t:'a cotar'}; if(it.pago<=0) return {c:'pendente',t:'pendente'}; if(it.pago>=prev-0.5) return {c:'pago',t:'quitado'}; return {c:'parcial',t:'parcial'}; }
+
+function renderItens(){
+  const tb=document.getElementById('itens'); tb.innerHTML='';
+  D.itens.forEach((it,i)=>{
+    const prev=it.qtd*it.vu, falta=prev-it.pago;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td data-l="Item"><input class="cell" data-i="${i}" data-f="item" value="${esc(it.item)}"></td>
+      <td data-l="Categoria"><select class="cell" data-i="${i}" data-f="cat">${CATS.map(c=>`<option ${c===it.cat?'selected':''}>${c}</option>`).join('')}</select></td>
+      <td data-l="Qtd" class="r"><input class="cell num" data-i="${i}" data-f="qtd" value="${it.qtd}" inputmode="numeric" style="max-width:60px"></td>
+      <td data-l="Valor unit." class="r"><input class="cell num" data-i="${i}" data-f="vu" value="${brl(it.vu)}" inputmode="numeric"></td>
+      <td data-l="Previsto" class="calc">${brl(prev)}</td>
+      <td data-l="Pago" class="r"><input class="cell num" data-i="${i}" data-f="pago" value="${brl(it.pago)}" inputmode="numeric"></td>
+      <td data-l="Falta" class="calc ${falta>0?'falta-c':''}">${brl(falta)}</td>
+      <td class="act"><button class="del" data-del-i="${i}" title="remover" aria-label="remover item">✕</button></td>`;
+    tb.appendChild(tr);
+    const or=document.createElement('tr'); or.className='obs-row';
+    or.innerHTML=`<td colspan="8" data-l=""><input class="obs" data-i="${i}" data-f="obs" placeholder="observações…" value="${esc(it.obs)}"></td>`;
+    tb.appendChild(or);
+  });
+  const tp=D.itens.reduce((a,b)=>a+b.qtd*b.vu,0);
+  const tg=D.itens.reduce((a,b)=>a+b.pago,0);
+  document.getElementById('t-prev').textContent=brl(tp);
+  document.getElementById('t-pago').textContent=brl(tg);
+  document.getElementById('t-falta').textContent=brl(tp-tg);
+}
+
+function renderPags(){
+  const tb=document.getElementById('pags'); tb.innerHTML='';
+  const sorted=D.pags.map((p,i)=>({p,i})).sort((a,b)=>(a.p.data||'').localeCompare(b.p.data||''));
+  sorted.forEach(({p,i})=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td data-l="Data"><input type="date" class="cell num" data-pi="${i}" data-f="data" value="${p.data}"></td>
+      <td data-l="Descrição"><input class="cell" data-pi="${i}" data-f="desc" value="${esc(p.desc)}"></td>
+      <td data-l="Fornecedor"><input class="cell" data-pi="${i}" data-f="forn" value="${esc(p.forn)}"></td>
+      <td data-l="Valor" class="r"><input class="cell num" data-pi="${i}" data-f="val" value="${brl(p.val)}" inputmode="numeric"></td>
+      <td data-l="Status"><select class="cell" data-pi="${i}" data-f="st">${STATUS_P.map(s=>`<option ${s===p.st?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td class="act"><button class="del" data-delp-i="${i}" title="remover" aria-label="remover pagamento">✕</button></td>`;
+    tb.appendChild(tr);
+  });
+  const paid=D.pags.filter(p=>p.st==='Pago').reduce((a,b)=>a+b.val,0);
+  document.getElementById('pg-total').textContent='R$ '+brl(paid);
+}
+
+function renderTop(){
+  const prev=D.itens.reduce((a,b)=>a+b.qtd*b.vu,0);
+  const pago=D.itens.reduce((a,b)=>a+b.pago,0);
+  const falta=prev-pago, saldo=D.teto-prev;
+  document.getElementById('s-prev').textContent=brl(prev);
+  document.getElementById('s-pago').textContent=brl(pago);
+  document.getElementById('s-falta').textContent=brl(falta);
+  document.getElementById('s-saldo').textContent=brl(saldo);
+  document.getElementById('s-saldo-card').classList.toggle('neg',saldo<0);
+  const per = D.conv>0 ? prev/D.conv : 0;
+  document.getElementById('s-perhead').textContent='R$ '+brl(per);
+  const base=Math.max(D.teto,prev,1);
+  document.getElementById('bar-pago').style.width=(pago/base*100)+'%';
+  document.getElementById('bar-prev').style.width=(Math.max(prev-pago,0)/base*100)+'%';
+  const msg=document.getElementById('tetomsg'), t=document.getElementById('tetomsg-t'), dot=msg.querySelector('.dot');
+  if(prev>D.teto){msg.className='tetomsg over';dot.className='dot over';t.textContent='Orçamento estourado em R$ '+brl(prev-D.teto)+' — reveja itens ou aumente o teto.';}
+  else{msg.className='tetomsg ok';dot.className='dot ok';t.textContent='Dentro do teto — folga de R$ '+brl(D.teto-prev)+'.';}
+}
+function renderAll(){renderItens();renderPags();renderTop();}
+
+// events
+document.body.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.i!==undefined && t.dataset.f){
+    const i=+t.dataset.i,f=t.dataset.f;
+    if(f==='qtd'||f==='vu'||f==='pago'){D.itens[i][f]=parseNum(t.value);}
+    else{D.itens[i][f]=t.value;}
+    if(f==='qtd'||f==='vu'||f==='pago') renderTopSoft(i); else save();
+  }
+  if(t.dataset.pi!==undefined && t.dataset.f){
+    const i=+t.dataset.pi,f=t.dataset.f;
+    D.pags[i][f]= f==='val'?parseNum(t.value):t.value;
+    if(f==='val'||f==='st') document.getElementById('pg-total').textContent='R$ '+brl(D.pags.filter(p=>p.st==='Pago').reduce((a,b)=>a+b.val,0));
+    save();
+  }
+  if(t.id==='teto'){D.teto=parseNum(t.value);renderTop();save();}
+  if(t.id==='conv'){D.conv=parseNum(t.value)||0;renderTop();save();}
+});
+// recalc row calc cells live without full re-render (keeps focus)
+function renderTopSoft(i){
+  const it=D.itens[i], prev=it.qtd*it.vu, falta=prev-it.pago;
+  const row=document.querySelector(`[data-i="${i}"][data-f="item"]`).closest('tr');
+  row.querySelectorAll('td.calc')[0].textContent=brl(prev);
+  const fc=row.querySelectorAll('td.calc')[1]; fc.textContent=brl(falta); fc.classList.toggle('falta-c',falta>0);
+  const tp=D.itens.reduce((a,b)=>a+b.qtd*b.vu,0), tg=D.itens.reduce((a,b)=>a+b.pago,0);
+  document.getElementById('t-prev').textContent=brl(tp);
+  document.getElementById('t-pago').textContent=brl(tg);
+  document.getElementById('t-falta').textContent=brl(tp-tg);
+  renderTop(); save();
+}
+document.body.addEventListener('change',e=>{
+  if(e.target.dataset.f==='cat'||e.target.dataset.f==='st'){save();}
+  if(e.target.dataset.f==='data'){renderPags();save();}
+});
+document.body.addEventListener('click',e=>{
+  const t=e.target;
+  if(t.dataset.delI!==undefined){D.itens.splice(+t.dataset.delI,1);renderAll();save();}
+  if(t.dataset.delpI!==undefined){D.pags.splice(+t.dataset.delpI,1);renderAll();save();}
+});
+document.getElementById('add-item').onclick=()=>{D.itens.push({item:"Novo item",cat:"Outros",qtd:1,vu:0,pago:0,obs:""});renderAll();save();
+  const rows=document.querySelectorAll('#itens [data-f="item"]');rows[rows.length-1].focus();};
+document.getElementById('add-pag').onclick=()=>{D.pags.push({data:"2026-09-19",desc:"Novo pagamento",forn:"",val:0,st:"Agendado"});renderAll();save();};
+document.getElementById('reset').onclick=()=>{if(confirm('Restaurar todos os dados originais dos contratos? Suas edições serão perdidas.')){D=structuredClone(SEED);renderAll();save();document.getElementById('teto').value=D.teto;document.getElementById('conv').value=D.conv;}};
+document.getElementById('export').onclick=()=>{const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='festa-pauba-backup.json';a.click();};
+document.getElementById('import').onclick=()=>document.getElementById('file').click();
+document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{D=JSON.parse(r.result);renderAll();save();document.getElementById('teto').value=D.teto;document.getElementById('conv').value=D.conv;}catch(err){alert('Arquivo inválido.');}};r.readAsText(f);};
+
+renderAll();
+
+// ===== RSVP DASHBOARD =====
+const RSVP = [{"first":"Vanessa","last":"FUZARO","email":"vgconstancio@hotmail.com","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","phone_num":"+55 16 99163-4343"},{"first":"Luciano","last":"FUZARO","email":"","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","phone_num":"+55 16 99334-6464"},{"first":"Letícia","last":"FUZARO","email":"","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","age":null,"bracket":"13+","phone_num":""},{"first":"Cadu","last":"Carvalho","email":"carvalho.cadu@hotmail.com","code":"HUGO8C4M","gsize":2,"diet":"","note":"","addr":"Rua Benedito Soares Fernandes, 448 vila yara osasco sp","ts":"February 10, 2026 at 04:15 PM","phone_num":"+55 11 94225-4606"},{"first":"Vanessa","last":"Galera","email":"","code":"HUGO8C4M","gsize":2,"diet":"","note":"","addr":"Rua Benedito Soares Fernandes, 448 vila yara osasco sp","ts":"February 10, 2026 at 04:15 PM","phone_num":""},{"first":"Maria Emiliana","last":"de Carvalho Gonçalves","email":"","code":"CARVGONC01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Luiz Carlos","last":"Gonçalves","email":"","code":"CARVGONC01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Jose","last":"Goncalves","email":"mylsania@gmail.com","code":"GGMAO0NG","gsize":2,"diet":"","note":"Ja estamos ansiosos para estar com vocês.Sera incrível","addr":"mylsania@gmail.com","ts":"February 10, 2026 at 04:31 PM","phone_num":""},{"first":"Mylsania","last":"Goncalves","email":"","code":"GGMAO0NG","gsize":2,"diet":"","note":"Ja estamos ansiosos para estar com vocês.Sera incrível","addr":"mylsania@gmail.com","ts":"February 10, 2026 at 04:31 PM","phone_num":""},{"first":"Isabelle","last":"Campos","email":"isabelle.sc04@gmail.com","code":"KN3Z97D0","gsize":1,"diet":"","note":"Eu não vou perder por nada! Feliz de dividir vida com você meu amor!","addr":"Rua Aruanã, 821 - apto 54B - Tamboré - Barueri - SP - CEP: 06460-010","ts":"February 10, 2026 at 05:02 PM","phone_num":""},{"first":"Danielle","last":"Campos Saggiorato","email":"Campos_dani17@hotmail.com","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","phone_num":"+55 11 98458-7780"},{"first":"Leonardo","last":"Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","phone_num":"+55 11 98478-3616"},{"first":"Vicente","last":"Campos Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","age":9,"bracket":"6-9","phone_num":"+55 11 98458-7780"},{"first":"Olivia","last":"Campos Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","age":3,"bracket":"3-5","phone_num":"+55 11 98458-7780"},{"first":"Aline","last":"Macedo","email":"alinedemacedo86@gmail.com","code":"IJOGCXWO","gsize":1,"diet":"Só como carne de peixe","note":"Luiz Henriqueeeeee. Não acredito que chegamos aos 40 e vou poder comemorar c vc","addr":"Rua Sebastião Mariano Nepomuceno, 833 casa 9 cep 11660130","ts":"February 10, 2026 at 05:07 PM","phone_num":"+55 11 99994-8028"},{"first":"Alan","last":"Costa","email":"nataliagcpv@hotmail.com","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","phone_num":""},{"first":"Natalia","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","phone_num":"+55 11 96377-6336"},{"first":"Liz","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":6,"bracket":"6-9","phone_num":""},{"first":"Maya","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":6,"bracket":"6-9","phone_num":""},{"first":"Natan","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":8,"bracket":"6-9","phone_num":""},{"first":"Bruna","last":"Marreiros","email":"brunavmarreiros@gmail.com","code":"R7OU3P7I","gsize":2,"diet":"","note":"","addr":"Rua Martins Fontes, 403, apto 22 CEP 01015-000 / São Paulo-SP","ts":"February 10, 2026 at 05:29 PM","phone_num":"+55 11 98284-2330"},{"first":"Rebeca","last":"Esteves","email":"","code":"R7OU3P7I","gsize":2,"diet":"","note":"","addr":"Rua Martins Fontes, 403, apto 22 CEP 01015-000 / São Paulo-SP","ts":"February 10, 2026 at 05:29 PM","phone_num":""},{"first":"Monique","last":"Medeiros","email":"moniquedemedeiros@gmail.com","code":"9ABH0WOX","gsize":2,"diet":"","note":"Lu, quero muito comemorar com você essa grande data e gostaria muito de te ver imitando a professora de química! Hahaha! Obrigada por ter marcado a minha infância! Te amo! Beijos, Monique","addr":"Rua Maria Bucalem Haddad, 123, apto 172A, Cursino. São Paulo/SP. CEP: 04125010","ts":"February 10, 2026 at 07:10 PM","phone_num":""},{"first":"Danilo","last":"Olivencia","email":"","code":"9ABH0WOX","gsize":2,"diet":"","note":"Lu, quero muito comemorar com você essa grande data e gostaria muito de te ver imitando a professora de química! Hahaha! Obrigada por ter marcado a minha infância! Te amo! Beijos, Monique","addr":"Rua Maria Bucalem Haddad, 123, apto 172A, Cursino. São Paulo/SP. CEP: 04125010","ts":"February 10, 2026 at 07:10 PM","phone_num":""},{"first":"Mariana","last":"Constancio","email":"mgsantana3@hotmail.com","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","phone_num":""},{"first":"Rodolfo","last":"Constancio","email":"","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","phone_num":"+55 16 99108-0070"},{"first":"Henrique","last":"Constancio","email":"","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","age":8,"bracket":"6-9","phone_num":""},{"first":"Franklin","last":"Constâncio","email":"kiloconstancio@yahoo.com.br","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","phone_num":""},{"first":"Josiana","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","phone_num":"+55 16 99166-6914"},{"first":"Sofia","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","age":13,"bracket":"13+","phone_num":""},{"first":"Pedro","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","age":11,"bracket":"10-12","phone_num":""},{"first":"MARCIO","last":"DA FREIRIA","email":"freiriamarcio@gmail.com","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Paula","last":"Mazzaro","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Marcela","last":"Freiria","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Gabriel","last":"Freiria","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Giovanna","last":"Sagahbi","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Kristen","last":"Cowan","email":"kristenfritts@gmail.com","code":"NJ30Z2AX","gsize":2,"diet":"","note":"so excited to come celebrate with you!!!❤️🎉🥳🍾","addr":"700 N DADE 231, ALDRICH, MO 65601","ts":"February 10, 2026 at 11:16 PM","phone_num":"+1 573 286-8035"},{"first":"Robert","last":"Cowan","email":"","code":"NJ30Z2AX","gsize":2,"diet":"","note":"so excited to come celebrate with you!!!❤️🎉🥳🍾","addr":"700 N DADE 231, ALDRICH, MO 65601","ts":"February 10, 2026 at 11:16 PM","phone_num":"+1 417 298-0531"},{"first":"Diana","last":"Marques","email":"Dmarxs@yahoo.com","code":"JAGNQ5WM","gsize":2,"diet":"","note":"Luiggi, sua festa vai ser maravilhosa! Obrigada pelo convite! Vamos comemorar muito seus 40 anos cheio de alegria, paz, amor e harmonia! Sua amizade é um presente pra mim! Nas horas boas e nas horas ruins, mesmo de longe vc esta sempre aqui pertinho comigo. Voce traduz o verdadeiro significado da amizade! Obrigada por me permitir fazer parte disso! Por esta razao, vamoa celebrar muito sua vida! Pous voce é Marvellous, darling! Super beijo e ja ja estamos juntos novamente! Di","addr":"Rua clementina lopes bueno,289 - parque Brasil 500 - Paulinia-SP cep 13141-050","ts":"February 11, 2026 at 06:51 AM","phone_num":"+55 19 3795-9007"},{"first":"Fabiano","last":"Barreto","email":"","code":"JAGNQ5WM","gsize":2,"diet":"","note":"Luiggi, sua festa vai ser maravilhosa! Obrigada pelo convite! Vamos comemorar muito seus 40 anos cheio de alegria, paz, amor e harmonia! Sua amizade é um presente pra mim! Nas horas boas e nas horas ruins, mesmo de longe vc esta sempre aqui pertinho comigo. Voce traduz o verdadeiro significado da amizade! Obrigada por me permitir fazer parte disso! Por esta razao, vamoa celebrar muito sua vida! Pous voce é Marvellous, darling! Super beijo e ja ja estamos juntos novamente! Di","addr":"Rua clementina lopes bueno,289 - parque Brasil 500 - Paulinia-SP cep 13141-050","ts":"February 11, 2026 at 06:51 AM","phone_num":""},{"first":"Andressa","last":"Boretti","email":"andressaconstancio@hotmail.com","code":"GPRDGG23","gsize":3,"diet":"Camarão","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","phone_num":"+55 16 99144-7697"},{"first":"Luís Fernando","last":"Boretti","email":"","code":"GPRDGG23","gsize":3,"diet":"","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","phone_num":""},{"first":"Alice","last":"Boretti","email":"","code":"GPRDGG23","gsize":3,"diet":"","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","age":null,"bracket":"13+","phone_num":""},{"first":"Natalia","last":"Hory","email":"nat.gf@hotmail.com","code":"N7ZGKYCI","gsize":2,"diet":"","note":"Vem ni mim dia 19/09!!!!!! Uhuuuulllllll 😘😘😘","addr":"Rua Coronel Quirino, 1343 - Apto. 51 - Cambuí - Campinas/SP - CEP: 13025-002","ts":"February 15, 2026 at 01:12 PM","phone_num":"+55 19 99255-0262"},{"first":"Rogério","last":"Hory","email":"","code":"N7ZGKYCI","gsize":2,"diet":"","note":"Vem ni mim dia 19/09!!!!!! Uhuuuulllllll 😘😘😘","addr":"Rua Coronel Quirino, 1343 - Apto. 51 - Cambuí - Campinas/SP - CEP: 13025-002","ts":"February 15, 2026 at 01:12 PM","phone_num":""},{"first":"Vilane","last":"Santos","email":"vilanevsantos@gmail.com","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"vilanevsantos@gmail.com","ts":"February 18, 2026 at 08:44 AM","phone_num":""},{"first":"Anderson","last":"Mello","email":"","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Marília","last":"Momesso","email":"","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Paula","last":"Peagno","email":"paula.peagno@gmail.com","code":"PGGZUNDO","gsize":2,"diet":"","note":"Será mto boooommmm","addr":"Rua padre Antônio Vieira 139 vila branca Jacareí cep 12301110","ts":"March 02, 2026 at 06:43 PM","phone_num":"+55 12 98156-7881"},{"first":"Rafael","last":"Oliveira","email":"","code":"PGGZUNDO","gsize":2,"diet":"","note":"Será mto boooommmm","addr":"Rua padre Antônio Vieira 139 vila branca Jacareí cep 12301110","ts":"March 02, 2026 at 06:43 PM","phone_num":""},{"first":"Luiz","last":"Whitney","email":"","code":"WHITNEY01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":39,"bracket":"13+"},{"first":"Andrew","last":"Whitney","email":"","code":"WHITNEY01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Rafael","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Andressa","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Samuel","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":2,"bracket":"0-2"},{"first":"Fernando","last":"Santana","email":"","code":"SANTANA01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":38,"bracket":"13+"},{"first":"Gabriela","last":"Santana","email":"","code":"SANTANA01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Viviane","last":"Politi","email":"","code":"POLITI01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Cristiane","last":"Borges","email":"","code":"POLITI01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Angela","last":"Fontana","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":70,"bracket":"13+"},{"first":"Luana","last":"Xavier","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":42,"bracket":"13+"},{"first":"Rafael","last":"Xavier","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":42,"bracket":"13+"},{"first":"Thais","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"+55 21 99911-6644"},{"first":"Suellen","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Catarina","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":7,"bracket":"6-9"}];
+
+const GRP_COLORS = ['#1C6E71','#D96C4A','#7A8B4F','#C79A3B','#124B4D','#A84A2E','#4C7A3E','#8a6a1e'];
+const AGE_META = {
+  '0-2':  {lab:'Bebê (0–2)',    col:'#8A8776'},
+  '3-5':  {lab:'Pré-escola (3–5)', col:'#7A8B4F'},
+  '6-9':  {lab:'Criança (6–9)',  col:'#1C6E71'},
+  '10-12':{lab:'Pré-adol. (10–12)', col:'#C79A3B'},
+  '13+':  {lab:'Adolescente (13+)', col:'#D96C4A'}
+};
+
+function renderRSVP(){
+  const total = RSVP.length;
+  const codes = {};
+  RSVP.forEach(g=>{ (codes[g.code]=codes[g.code]||[]).push(g); });
+  const nGroups = Object.keys(codes).length;
+  const diet = RSVP.filter(g=>g.diet && g.diet.trim());
+  const noteCodes = new Set(RSVP.filter(g=>g.note && g.note.trim()).map(g=>g.code));
+  document.getElementById('r-total').textContent = total;
+  document.getElementById('r-groups').textContent = nGroups;
+  document.getElementById('r-diet').textContent = diet.length;
+  document.getElementById('r-notes').textContent = noteCodes.size;
+
+  // group size distribution (by group)
+  const dist = {};
+  Object.values(codes).forEach(g=>{ const s=g.length; dist[s]=(dist[s]||0)+1; });
+  const maxc = Math.max(...Object.values(dist),1);
+  const sizes = Object.keys(dist).map(Number).sort((a,b)=>a-b);
+  document.getElementById('r-sizes').innerHTML = sizes.map(s=>{
+    const c=dist[s], w=Math.round(c/maxc*100);
+    const lbl = s===1?'1 pessoa':s+' pessoas';
+    return `<div class="bar-row"><span class="lab">${lbl}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%">${c}</div></div></div>`;
+  }).join('');
+
+  // dietary list
+  const dl = document.getElementById('r-dietlist');
+  if(diet.length){
+    dl.innerHTML = diet.map(g=>`<div class="diet-item"><span class="who">${g.first} ${g.last}</span><span class="what">${g.diet}</span></div>`).join('');
+  } else { dl.innerHTML = '<p style="color:var(--cinza);font-style:italic">Nenhuma restrição informada.</p>'; }
+
+  // ---- age brackets ----
+  const kids = RSVP.filter(g=>g.bracket);
+  const acount = {'0-2':0,'3-5':0,'6-9':0,'10-12':0,'13+':0};
+  kids.forEach(g=>acount[g.bracket]++);
+  const amax = Math.max(...Object.values(acount),1);
+  document.getElementById('r-ages').innerHTML = Object.keys(AGE_META).map(b=>{
+    const c=acount[b], w=c?Math.round(c/amax*100):2;
+    const meta=AGE_META[b];
+    return `<div class="age-bar-row"><span class="lab">${meta.lab}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${meta.col}">${c||''}</div></div></div>`;
+  }).join('');
+  // summary removed per request
+  document.getElementById('r-ages-summary').innerHTML =
+    `<b>${kids.length} crianças/menores</b> confirmadas.`;
+
+  renderGuestRows('');
+}
+
+function renderGuestRows(q){
+  q=(q||'').toLowerCase().trim();
+  const tb=document.getElementById('r-rows');
+  // group by code, preserve first-seen order; assign a stable color per group
+  const codes={}, order=[];
+  RSVP.forEach(g=>{ if(!codes[g.code]){codes[g.code]=[];order.push(g.code);} codes[g.code].push(g); });
+  let html='', shown=0, ci=0;
+  order.forEach(code=>{
+    const members=codes[code];
+    const col=GRP_COLORS[ci % GRP_COLORS.length]; ci++;
+    const match = members.filter(g=> !q || (g.first+' '+g.last+' '+g.email+' '+(g.phone_num||'')+' '+(g.diet||'')+' '+(g.note||'')).toLowerCase().includes(q));
+    if(!match.length) return;
+    shown+=match.length;
+    const lead = members[0];
+    const fam = lead.last || (lead.first+"'s grupo");
+    html += `<tr class="grp-head"><td colspan="4"><div class="gh"><span class="swatch" style="background:${col}"></span>`+
+            `Grupo ${fam} <span class="cnt">· ${members.length} pessoa${members.length>1?'s':''}</span></div></td></tr>`;
+    match.forEach(g=>{
+      const diet = g.diet ? `<span class="chip diet">${g.diet}</span>` : '<span style="color:var(--cinza)">—</span>';
+      const email = g.email || '<span style="color:var(--cinza)">—</span>';
+      const phone = g.phone_num ? `<span class="gt-sub">${g.phone_num}</span>` : '<span style="color:var(--cinza)">—</span>';
+      const kid = (g.bracket && g.bracket!=='13+') ? `<span class="kid-badge">${g.age?g.age+' anos':AGE_META[g.bracket].lab}</span>` : '';
+      html += `<tr class="gmember" style="--gcol:${col}">
+        <td><span class="gt-name">${g.first} ${g.last}</span>${kid}</td>
+        <td class="gt-sub">${email}</td>
+        <td>${phone}</td>
+        <td>${diet}</td>
+      </tr>`;
+    });
+  });
+  tb.innerHTML = html || '<tr><td colspan="4" style="text-align:center;color:var(--cinza);font-style:italic;padding:1.5rem">Nenhum convidado encontrado.</td></tr>';
+}
+
+document.getElementById('r-search').addEventListener('input',e=>renderGuestRows(e.target.value));
+
+// tab switching
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('on');
+  };
+});
+
+renderRSVP();
+
+</script>
+</body>
+</html>
