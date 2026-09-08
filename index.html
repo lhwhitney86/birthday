@@ -162,6 +162,30 @@
     background:transparent;color:var(--mar-esc);padding:.4rem .8rem;border-radius:8px;cursor:pointer;flex:0 0 auto}
   .histrow button:hover{background:var(--mar);color:#fff}
   .histempty{color:var(--cinza);font-style:italic;font-size:.9rem;padding:1rem 0;text-align:center}
+  /* add-guest form */
+  .addguest{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:center}
+  .ag-in{font-family:var(--f-body);font-size:.9rem;padding:.55rem .7rem;border:1px solid var(--linha);
+    border-radius:9px;background:var(--branco);color:var(--tinta);flex:1;min-width:120px}
+  .ag-in:focus{outline:none;border-color:var(--mar);box-shadow:0 0 0 3px rgba(28,110,113,.1)}
+  .ag-age{flex:0 0 80px;min-width:70px}
+  .addguest .btn{flex:0 0 auto}
+  .g-remove{border:none;background:transparent;color:var(--cinza);cursor:pointer;font-size:1rem;line-height:1;
+    padding:.3rem .5rem;border-radius:7px;transition:all .15s}
+  .g-remove:hover{background:rgba(176,67,47,.14);color:var(--vermelho)}
+  /* inline-editable guest fields */
+  .ged{font-family:var(--f-body);font-size:.9rem;color:var(--tinta);border:1px solid transparent;
+    border-radius:7px;padding:.4rem .45rem;background:transparent;width:100%;box-sizing:border-box;
+    transition:border-color .15s,background .15s}
+  .ged::placeholder{color:var(--linha);font-style:italic}
+  .ged:hover{border-color:var(--linha)}
+  .ged:focus{outline:none;border-color:var(--mar);background:#fff;box-shadow:0 0 0 3px rgba(28,110,113,.1)}
+  .ed-name{display:flex;flex-wrap:nowrap;gap:.25rem;align-items:center}
+  .ed-name .ged{flex:1 1 0;min-width:0}
+  .ged-age{width:100%!important;text-align:center;padding:.4rem .2rem}
+  td.act-td{white-space:nowrap}
+  .act-wrap{display:flex;align-items:center;gap:.2rem;justify-content:flex-end}
+  .act-wrap .ged-age{width:46px!important}
+  .gmember.is-kid .ged-age{background:rgba(122,139,79,.14);color:#54632f;font-weight:600;border-radius:7px}
 
   /* ---- Tabs ---- */
   .tabs{display:flex;gap:.4rem;margin:.5rem 0 1.75rem;border-bottom:1.5px solid var(--linha)}
@@ -194,10 +218,10 @@
   .search-box{width:100%;font-family:var(--f-body);font-size:.95rem;padding:.7rem .9rem;border:1px solid var(--linha);
     border-radius:10px;background:var(--branco);margin-bottom:.9rem;color:var(--tinta)}
   .search-box:focus{outline:none;border-color:var(--mar);box-shadow:0 0 0 3px rgba(28,110,113,.1)}
-  .guest-table{width:100%;border-collapse:collapse;font-size:.92rem}
+  .guest-table{width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
   .guest-table th{font-family:var(--f-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--cinza);text-align:left;padding:.6rem .7rem;background:var(--areia-2);font-weight:500;position:sticky;top:0}
-  .guest-table td{padding:.6rem .7rem;border-top:1px solid var(--linha);vertical-align:top}
+  .guest-table td{padding:.3rem .5rem;border-top:1px solid var(--linha);vertical-align:middle}
   .guest-table tr:hover td{background:var(--areia)}
   .gt-name{font-weight:500;color:var(--carvao)}
   .gt-sub{font-family:var(--f-data);font-size:11px;color:var(--cinza)}
@@ -379,11 +403,22 @@
 
   <div class="panel">
     <h3>Lista de convidados confirmados</h3>
+
+    <div class="addguest">
+      <input type="text" id="ag-first" class="ag-in" placeholder="Nome">
+      <input type="text" id="ag-last" class="ag-in" placeholder="Sobrenome">
+      <input type="text" id="ag-phone" class="ag-in" placeholder="Telefone (opcional)">
+      <select id="ag-group" class="ag-in"></select>
+      <input type="text" id="ag-newgroup" class="ag-in" placeholder="Ou novo grupo…" style="display:none">
+      <input type="number" id="ag-age" class="ag-in ag-age" placeholder="Idade" min="0" max="120">
+      <button class="btn" id="ag-add">+ Adicionar</button>
+    </div>
+
     <input type="text" class="search-box" id="r-search" placeholder="Buscar por nome, e-mail ou restrição…">
     <div class="table-scroll">
       <table class="guest-table">
         <thead><tr>
-          <th style="width:28%">Nome</th><th style="width:30%">E-mail</th><th style="width:20%">Telefone</th><th style="width:22%">Restrição</th>
+          <th style="width:28%">Nome</th><th style="width:25%">E-mail</th><th style="width:19%">Telefone</th><th style="width:16%">Restrição</th><th style="width:96px">Idade</th>
         </tr></thead>
         <tbody id="r-rows"></tbody>
       </table>
@@ -399,10 +434,10 @@
 <script>
 const CATS = ["Local & Estrutura","Buffet & Bebidas","Bolo & Doces","Decoração","Música & Som","Fotografia","Convites & Papelaria","Lembrancinhas","Outros"];
 const STATUS_P = ["Agendado","Pago","Atrasado"];
-const KEY = "festa_pauba_v4";
+const KEY = "festa_pauba_v5";
 
 const SEED = {
-  conv: 60, teto: 35400,
+  conv: 60, teto: 37040,
   itens: [
     {item:"Locação Casa Paúba House (2 diárias)",cat:"Local & Estrutura",qtd:1,vu:9300,pago:4650,obs:"18–20/09. R$4.650 na assinatura + R$4.650 até 17/09. Máx 20 hóspedes; evento p/ ~40 exige autorização escrita do locador."},
     {item:"Assessoria de eventos (Maria Carolina)",cat:"Local & Estrutura",qtd:1,vu:6000,pago:6000,obs:"3× R$2.000 (01/04, 01/06, 01/09): TODAS pagas. Equipe p/ até 60 convidados; +R$550 por assistente extra."},
@@ -661,7 +696,7 @@ setStatus('saved','Salvo');
 
 
 // ===== RSVP DASHBOARD =====
-const RSVP = [{"first":"Vanessa","last":"FUZARO","email":"vgconstancio@hotmail.com","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","phone_num":"+55 16 99163-4343"},{"first":"Luciano","last":"FUZARO","email":"","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","phone_num":"+55 16 99334-6464"},{"first":"Letícia","last":"FUZARO","email":"","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","age":null,"bracket":"13+","phone_num":""},{"first":"Cadu","last":"Carvalho","email":"carvalho.cadu@hotmail.com","code":"HUGO8C4M","gsize":2,"diet":"","note":"","addr":"Rua Benedito Soares Fernandes, 448 vila yara osasco sp","ts":"February 10, 2026 at 04:15 PM","phone_num":"+55 11 94225-4606"},{"first":"Vanessa","last":"Galera","email":"","code":"HUGO8C4M","gsize":2,"diet":"","note":"","addr":"Rua Benedito Soares Fernandes, 448 vila yara osasco sp","ts":"February 10, 2026 at 04:15 PM","phone_num":""},{"first":"Maria Emiliana","last":"de Carvalho Gonçalves","email":"","code":"CARVGONC01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Luiz Carlos","last":"Gonçalves","email":"","code":"CARVGONC01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Jose","last":"Goncalves","email":"mylsania@gmail.com","code":"GGMAO0NG","gsize":2,"diet":"","note":"Ja estamos ansiosos para estar com vocês.Sera incrível","addr":"mylsania@gmail.com","ts":"February 10, 2026 at 04:31 PM","phone_num":""},{"first":"Mylsania","last":"Goncalves","email":"","code":"GGMAO0NG","gsize":2,"diet":"","note":"Ja estamos ansiosos para estar com vocês.Sera incrível","addr":"mylsania@gmail.com","ts":"February 10, 2026 at 04:31 PM","phone_num":""},{"first":"Isabelle","last":"Campos","email":"isabelle.sc04@gmail.com","code":"KN3Z97D0","gsize":1,"diet":"","note":"Eu não vou perder por nada! Feliz de dividir vida com você meu amor!","addr":"Rua Aruanã, 821 - apto 54B - Tamboré - Barueri - SP - CEP: 06460-010","ts":"February 10, 2026 at 05:02 PM","phone_num":""},{"first":"Danielle","last":"Campos Saggiorato","email":"Campos_dani17@hotmail.com","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","phone_num":"+55 11 98458-7780"},{"first":"Leonardo","last":"Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","phone_num":"+55 11 98478-3616"},{"first":"Vicente","last":"Campos Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","age":9,"bracket":"6-9","phone_num":"+55 11 98458-7780"},{"first":"Olivia","last":"Campos Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","age":3,"bracket":"3-5","phone_num":"+55 11 98458-7780"},{"first":"Aline","last":"Macedo","email":"alinedemacedo86@gmail.com","code":"IJOGCXWO","gsize":1,"diet":"Só como carne de peixe","note":"Luiz Henriqueeeeee. Não acredito que chegamos aos 40 e vou poder comemorar c vc","addr":"Rua Sebastião Mariano Nepomuceno, 833 casa 9 cep 11660130","ts":"February 10, 2026 at 05:07 PM","phone_num":"+55 11 99994-8028"},{"first":"Alan","last":"Costa","email":"nataliagcpv@hotmail.com","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","phone_num":""},{"first":"Natalia","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","phone_num":"+55 11 96377-6336"},{"first":"Liz","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":6,"bracket":"6-9","phone_num":""},{"first":"Maya","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":6,"bracket":"6-9","phone_num":""},{"first":"Natan","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":8,"bracket":"6-9","phone_num":""},{"first":"Bruna","last":"Marreiros","email":"brunavmarreiros@gmail.com","code":"R7OU3P7I","gsize":2,"diet":"","note":"","addr":"Rua Martins Fontes, 403, apto 22 CEP 01015-000 / São Paulo-SP","ts":"February 10, 2026 at 05:29 PM","phone_num":"+55 11 98284-2330"},{"first":"Rebeca","last":"Esteves","email":"","code":"R7OU3P7I","gsize":2,"diet":"","note":"","addr":"Rua Martins Fontes, 403, apto 22 CEP 01015-000 / São Paulo-SP","ts":"February 10, 2026 at 05:29 PM","phone_num":""},{"first":"Monique","last":"Medeiros","email":"moniquedemedeiros@gmail.com","code":"9ABH0WOX","gsize":2,"diet":"","note":"Lu, quero muito comemorar com você essa grande data e gostaria muito de te ver imitando a professora de química! Hahaha! Obrigada por ter marcado a minha infância! Te amo! Beijos, Monique","addr":"Rua Maria Bucalem Haddad, 123, apto 172A, Cursino. São Paulo/SP. CEP: 04125010","ts":"February 10, 2026 at 07:10 PM","phone_num":""},{"first":"Danilo","last":"Olivencia","email":"","code":"9ABH0WOX","gsize":2,"diet":"","note":"Lu, quero muito comemorar com você essa grande data e gostaria muito de te ver imitando a professora de química! Hahaha! Obrigada por ter marcado a minha infância! Te amo! Beijos, Monique","addr":"Rua Maria Bucalem Haddad, 123, apto 172A, Cursino. São Paulo/SP. CEP: 04125010","ts":"February 10, 2026 at 07:10 PM","phone_num":""},{"first":"Mariana","last":"Constancio","email":"mgsantana3@hotmail.com","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","phone_num":""},{"first":"Rodolfo","last":"Constancio","email":"","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","phone_num":"+55 16 99108-0070"},{"first":"Henrique","last":"Constancio","email":"","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","age":8,"bracket":"6-9","phone_num":""},{"first":"Franklin","last":"Constâncio","email":"kiloconstancio@yahoo.com.br","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","phone_num":""},{"first":"Josiana","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","phone_num":"+55 16 99166-6914"},{"first":"Sofia","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","age":13,"bracket":"13+","phone_num":""},{"first":"Pedro","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","age":11,"bracket":"10-12","phone_num":""},{"first":"MARCIO","last":"DA FREIRIA","email":"freiriamarcio@gmail.com","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Paula","last":"Mazzaro","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Marcela","last":"Freiria","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Gabriel","last":"Freiria","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Giovanna","last":"Sagahbi","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Kristen","last":"Cowan","email":"kristenfritts@gmail.com","code":"NJ30Z2AX","gsize":2,"diet":"","note":"so excited to come celebrate with you!!!❤️🎉🥳🍾","addr":"700 N DADE 231, ALDRICH, MO 65601","ts":"February 10, 2026 at 11:16 PM","phone_num":"+1 573 286-8035"},{"first":"Robert","last":"Cowan","email":"","code":"NJ30Z2AX","gsize":2,"diet":"","note":"so excited to come celebrate with you!!!❤️🎉🥳🍾","addr":"700 N DADE 231, ALDRICH, MO 65601","ts":"February 10, 2026 at 11:16 PM","phone_num":"+1 417 298-0531"},{"first":"Diana","last":"Marques","email":"Dmarxs@yahoo.com","code":"JAGNQ5WM","gsize":2,"diet":"","note":"Luiggi, sua festa vai ser maravilhosa! Obrigada pelo convite! Vamos comemorar muito seus 40 anos cheio de alegria, paz, amor e harmonia! Sua amizade é um presente pra mim! Nas horas boas e nas horas ruins, mesmo de longe vc esta sempre aqui pertinho comigo. Voce traduz o verdadeiro significado da amizade! Obrigada por me permitir fazer parte disso! Por esta razao, vamoa celebrar muito sua vida! Pous voce é Marvellous, darling! Super beijo e ja ja estamos juntos novamente! Di","addr":"Rua clementina lopes bueno,289 - parque Brasil 500 - Paulinia-SP cep 13141-050","ts":"February 11, 2026 at 06:51 AM","phone_num":"+55 19 3795-9007"},{"first":"Fabiano","last":"Barreto","email":"","code":"JAGNQ5WM","gsize":2,"diet":"","note":"Luiggi, sua festa vai ser maravilhosa! Obrigada pelo convite! Vamos comemorar muito seus 40 anos cheio de alegria, paz, amor e harmonia! Sua amizade é um presente pra mim! Nas horas boas e nas horas ruins, mesmo de longe vc esta sempre aqui pertinho comigo. Voce traduz o verdadeiro significado da amizade! Obrigada por me permitir fazer parte disso! Por esta razao, vamoa celebrar muito sua vida! Pous voce é Marvellous, darling! Super beijo e ja ja estamos juntos novamente! Di","addr":"Rua clementina lopes bueno,289 - parque Brasil 500 - Paulinia-SP cep 13141-050","ts":"February 11, 2026 at 06:51 AM","phone_num":""},{"first":"Andressa","last":"Boretti","email":"andressaconstancio@hotmail.com","code":"GPRDGG23","gsize":3,"diet":"Camarão","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","phone_num":"+55 16 99144-7697"},{"first":"Luís Fernando","last":"Boretti","email":"","code":"GPRDGG23","gsize":3,"diet":"","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","phone_num":""},{"first":"Alice","last":"Boretti","email":"","code":"GPRDGG23","gsize":3,"diet":"","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","age":null,"bracket":"13+","phone_num":""},{"first":"Natalia","last":"Hory","email":"nat.gf@hotmail.com","code":"N7ZGKYCI","gsize":2,"diet":"","note":"Vem ni mim dia 19/09!!!!!! Uhuuuulllllll 😘😘😘","addr":"Rua Coronel Quirino, 1343 - Apto. 51 - Cambuí - Campinas/SP - CEP: 13025-002","ts":"February 15, 2026 at 01:12 PM","phone_num":"+55 19 99255-0262"},{"first":"Rogério","last":"Hory","email":"","code":"N7ZGKYCI","gsize":2,"diet":"","note":"Vem ni mim dia 19/09!!!!!! Uhuuuulllllll 😘😘😘","addr":"Rua Coronel Quirino, 1343 - Apto. 51 - Cambuí - Campinas/SP - CEP: 13025-002","ts":"February 15, 2026 at 01:12 PM","phone_num":""},{"first":"Vilane","last":"Santos","email":"vilanevsantos@gmail.com","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"vilanevsantos@gmail.com","ts":"February 18, 2026 at 08:44 AM","phone_num":""},{"first":"Anderson","last":"Mello","email":"","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Marília","last":"Momesso","email":"","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Paula","last":"Peagno","email":"paula.peagno@gmail.com","code":"PGGZUNDO","gsize":2,"diet":"","note":"Será mto boooommmm","addr":"Rua padre Antônio Vieira 139 vila branca Jacareí cep 12301110","ts":"March 02, 2026 at 06:43 PM","phone_num":"+55 12 98156-7881"},{"first":"Rafael","last":"Oliveira","email":"","code":"PGGZUNDO","gsize":2,"diet":"","note":"Será mto boooommmm","addr":"Rua padre Antônio Vieira 139 vila branca Jacareí cep 12301110","ts":"March 02, 2026 at 06:43 PM","phone_num":""},{"first":"Luiz","last":"Whitney","email":"","code":"WHITNEY01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":39,"bracket":"13+"},{"first":"Andrew","last":"Whitney","email":"","code":"WHITNEY01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Rafael","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Andressa","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Samuel","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":2,"bracket":"0-2"},{"first":"Fernando","last":"Santana","email":"","code":"SANTANA01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":38,"bracket":"13+"},{"first":"Gabriela","last":"Santana","email":"","code":"SANTANA01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Viviane","last":"Politi","email":"","code":"POLITI01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Cristiane","last":"Borges","email":"","code":"POLITI01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Angela","last":"Fontana","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":70,"bracket":"13+"},{"first":"Luana","last":"Xavier","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":42,"bracket":"13+"},{"first":"Rafael","last":"Xavier","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":42,"bracket":"13+"},{"first":"Thais","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"+55 21 99911-6644"},{"first":"Suellen","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Catarina","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":7,"bracket":"6-9"}];
+let RSVP = [{"first":"Vanessa","last":"FUZARO","email":"vgconstancio@hotmail.com","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","phone_num":"+55 16 99163-4343"},{"first":"Luciano","last":"FUZARO","email":"","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","phone_num":"+55 16 99334-6464"},{"first":"Letícia","last":"FUZARO","email":"","code":"59LU1SAW","gsize":3,"diet":"","note":"Amooo vc meu primo!! E não posso deixar de estar com vc, nesse dia tão especial!!","addr":"Rua Mário Dias,175. Casa16a35. Cep.:14.039-115. Ribeirão Preto/SP. Residencial Alphaville","ts":"February 10, 2026 at 04:01 PM","age":null,"bracket":"13+","phone_num":""},{"first":"Cadu","last":"Carvalho","email":"carvalho.cadu@hotmail.com","code":"HUGO8C4M","gsize":2,"diet":"","note":"","addr":"Rua Benedito Soares Fernandes, 448 vila yara osasco sp","ts":"February 10, 2026 at 04:15 PM","phone_num":"+55 11 94225-4606"},{"first":"Vanessa","last":"Galera","email":"","code":"HUGO8C4M","gsize":2,"diet":"","note":"","addr":"Rua Benedito Soares Fernandes, 448 vila yara osasco sp","ts":"February 10, 2026 at 04:15 PM","phone_num":""},{"first":"Maria Emiliana","last":"de Carvalho Gonçalves","email":"","code":"CARVGONC01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Luiz Carlos","last":"Gonçalves","email":"","code":"CARVGONC01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Jose","last":"Goncalves","email":"mylsania@gmail.com","code":"GGMAO0NG","gsize":3,"diet":"","note":"Ja estamos ansiosos para estar com vocês.Sera incrível","addr":"mylsania@gmail.com","ts":"February 10, 2026 at 04:31 PM","phone_num":""},{"first":"Mylsania","last":"Goncalves","email":"","code":"GGMAO0NG","gsize":3,"diet":"","note":"Ja estamos ansiosos para estar com vocês.Sera incrível","addr":"mylsania@gmail.com","ts":"February 10, 2026 at 04:31 PM","phone_num":""},{"first":"Renata","last":"Goncalves","email":"","code":"GGMAO0NG","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Isabelle","last":"Campos","email":"isabelle.sc04@gmail.com","code":"KN3Z97D0","gsize":1,"diet":"","note":"Eu não vou perder por nada! Feliz de dividir vida com você meu amor!","addr":"Rua Aruanã, 821 - apto 54B - Tamboré - Barueri - SP - CEP: 06460-010","ts":"February 10, 2026 at 05:02 PM","phone_num":""},{"first":"Danielle","last":"Campos Saggiorato","email":"Campos_dani17@hotmail.com","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","phone_num":"+55 11 98458-7780"},{"first":"Leonardo","last":"Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","phone_num":"+55 11 98478-3616"},{"first":"Vicente","last":"Campos Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","age":9,"bracket":"6-9","phone_num":"+55 11 98458-7780"},{"first":"Olivia","last":"Campos Saggiorato","email":"","code":"5ZX8GQGX","gsize":4,"diet":"","note":"Tamo junto nessa festa super love you","addr":"Rua Werner Goldberg 157 -273D Barueri -SP06414-025","ts":"February 10, 2026 at 05:05 PM","age":3,"bracket":"3-5","phone_num":"+55 11 98458-7780"},{"first":"Aline","last":"Macedo","email":"alinedemacedo86@gmail.com","code":"IJOGCXWO","gsize":1,"diet":"Só como carne de peixe","note":"Luiz Henriqueeeeee. Não acredito que chegamos aos 40 e vou poder comemorar c vc","addr":"Rua Sebastião Mariano Nepomuceno, 833 casa 9 cep 11660130","ts":"February 10, 2026 at 05:07 PM","phone_num":"+55 11 99994-8028"},{"first":"Alan","last":"Costa","email":"nataliagcpv@hotmail.com","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","phone_num":""},{"first":"Natalia","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","phone_num":"+55 11 96377-6336"},{"first":"Liz","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":6,"bracket":"6-9","phone_num":""},{"first":"Maya","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":6,"bracket":"6-9","phone_num":""},{"first":"Natan","last":"Costa","email":"","code":"Y8RZLVZQ","gsize":5,"diet":"","note":"Let’s celebrare","addr":"Rua Olímpio Romão César, 822","ts":"February 10, 2026 at 05:19 PM","age":8,"bracket":"6-9","phone_num":""},{"first":"Bruna","last":"Marreiros","email":"brunavmarreiros@gmail.com","code":"R7OU3P7I","gsize":2,"diet":"","note":"","addr":"Rua Martins Fontes, 403, apto 22 CEP 01015-000 / São Paulo-SP","ts":"February 10, 2026 at 05:29 PM","phone_num":"+55 11 98284-2330"},{"first":"Rebeca","last":"Esteves","email":"","code":"R7OU3P7I","gsize":2,"diet":"","note":"","addr":"Rua Martins Fontes, 403, apto 22 CEP 01015-000 / São Paulo-SP","ts":"February 10, 2026 at 05:29 PM","phone_num":""},{"first":"Monique","last":"Medeiros","email":"moniquedemedeiros@gmail.com","code":"9ABH0WOX","gsize":2,"diet":"","note":"Lu, quero muito comemorar com você essa grande data e gostaria muito de te ver imitando a professora de química! Hahaha! Obrigada por ter marcado a minha infância! Te amo! Beijos, Monique","addr":"Rua Maria Bucalem Haddad, 123, apto 172A, Cursino. São Paulo/SP. CEP: 04125010","ts":"February 10, 2026 at 07:10 PM","phone_num":""},{"first":"Danilo","last":"Olivencia","email":"","code":"9ABH0WOX","gsize":2,"diet":"","note":"Lu, quero muito comemorar com você essa grande data e gostaria muito de te ver imitando a professora de química! Hahaha! Obrigada por ter marcado a minha infância! Te amo! Beijos, Monique","addr":"Rua Maria Bucalem Haddad, 123, apto 172A, Cursino. São Paulo/SP. CEP: 04125010","ts":"February 10, 2026 at 07:10 PM","phone_num":""},{"first":"Mariana","last":"Constancio","email":"mgsantana3@hotmail.com","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","phone_num":""},{"first":"Rodolfo","last":"Constancio","email":"","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","phone_num":"+55 16 99108-0070"},{"first":"Henrique","last":"Constancio","email":"","code":"8TOF6POH","gsize":3,"diet":"","note":"","addr":"Rua Major Firmino Manço, 160 Residencial Estoril- 14240-206","ts":"February 10, 2026 at 07:23 PM","age":8,"bracket":"6-9","phone_num":""},{"first":"Franklin","last":"Constâncio","email":"kiloconstancio@yahoo.com.br","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","phone_num":""},{"first":"Josiana","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","phone_num":"+55 16 99166-6914"},{"first":"Sofia","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","age":13,"bracket":"13+","phone_num":""},{"first":"Pedro","last":"Constâncio","email":"","code":"AWD4XDTW","gsize":4,"diet":"","note":"Amamos receber seu convite primo, estaremos lá pra comemorar seus 40 anos juntos.","addr":"Rua Antônio chiericato, 550 Ribeirânia Ribeirão Preto CEP 14.096-510","ts":"February 10, 2026 at 07:36 PM","age":11,"bracket":"10-12","phone_num":""},{"first":"MARCIO","last":"DA FREIRIA","email":"freiriamarcio@gmail.com","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Paula","last":"Mazzaro","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Marcela","last":"Freiria","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Gabriel","last":"Freiria","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Giovanna","last":"Sagahbi","email":"","code":"KOGAJYTJ","gsize":5,"diet":"","note":"Uhuuuuuu","addr":"Antônio Pereira Lima 16","ts":"February 10, 2026 at 08:42 PM","phone_num":""},{"first":"Kristen","last":"Cowan","email":"kristenfritts@gmail.com","code":"NJ30Z2AX","gsize":2,"diet":"","note":"so excited to come celebrate with you!!!❤️🎉🥳🍾","addr":"700 N DADE 231, ALDRICH, MO 65601","ts":"February 10, 2026 at 11:16 PM","phone_num":"+1 573 286-8035"},{"first":"Robert","last":"Cowan","email":"","code":"NJ30Z2AX","gsize":2,"diet":"","note":"so excited to come celebrate with you!!!❤️🎉🥳🍾","addr":"700 N DADE 231, ALDRICH, MO 65601","ts":"February 10, 2026 at 11:16 PM","phone_num":"+1 417 298-0531"},{"first":"Diana","last":"Marques","email":"Dmarxs@yahoo.com","code":"JAGNQ5WM","gsize":2,"diet":"","note":"Luiggi, sua festa vai ser maravilhosa! Obrigada pelo convite! Vamos comemorar muito seus 40 anos cheio de alegria, paz, amor e harmonia! Sua amizade é um presente pra mim! Nas horas boas e nas horas ruins, mesmo de longe vc esta sempre aqui pertinho comigo. Voce traduz o verdadeiro significado da amizade! Obrigada por me permitir fazer parte disso! Por esta razao, vamoa celebrar muito sua vida! Pous voce é Marvellous, darling! Super beijo e ja ja estamos juntos novamente! Di","addr":"Rua clementina lopes bueno,289 - parque Brasil 500 - Paulinia-SP cep 13141-050","ts":"February 11, 2026 at 06:51 AM","phone_num":"+55 19 3795-9007"},{"first":"Fabiano","last":"Barreto","email":"","code":"JAGNQ5WM","gsize":2,"diet":"","note":"Luiggi, sua festa vai ser maravilhosa! Obrigada pelo convite! Vamos comemorar muito seus 40 anos cheio de alegria, paz, amor e harmonia! Sua amizade é um presente pra mim! Nas horas boas e nas horas ruins, mesmo de longe vc esta sempre aqui pertinho comigo. Voce traduz o verdadeiro significado da amizade! Obrigada por me permitir fazer parte disso! Por esta razao, vamoa celebrar muito sua vida! Pous voce é Marvellous, darling! Super beijo e ja ja estamos juntos novamente! Di","addr":"Rua clementina lopes bueno,289 - parque Brasil 500 - Paulinia-SP cep 13141-050","ts":"February 11, 2026 at 06:51 AM","phone_num":""},{"first":"Andressa","last":"Boretti","email":"andressaconstancio@hotmail.com","code":"GPRDGG23","gsize":3,"diet":"Camarão","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","phone_num":"+55 16 99144-7697"},{"first":"Luís Fernando","last":"Boretti","email":"","code":"GPRDGG23","gsize":3,"diet":"","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","phone_num":""},{"first":"Alice","last":"Boretti","email":"","code":"GPRDGG23","gsize":3,"diet":"","note":"Estamos super ansiosos pra dividir esse momento com vc! ❤️","addr":"Estrada da Limeirinha,800 casa 508 co","ts":"February 11, 2026 at 10:24 AM","age":null,"bracket":"13+","phone_num":""},{"first":"Natalia","last":"Hory","email":"nat.gf@hotmail.com","code":"N7ZGKYCI","gsize":2,"diet":"","note":"Vem ni mim dia 19/09!!!!!! Uhuuuulllllll 😘😘😘","addr":"Rua Coronel Quirino, 1343 - Apto. 51 - Cambuí - Campinas/SP - CEP: 13025-002","ts":"February 15, 2026 at 01:12 PM","phone_num":"+55 19 99255-0262"},{"first":"Rogério","last":"Hory","email":"","code":"N7ZGKYCI","gsize":2,"diet":"","note":"Vem ni mim dia 19/09!!!!!! Uhuuuulllllll 😘😘😘","addr":"Rua Coronel Quirino, 1343 - Apto. 51 - Cambuí - Campinas/SP - CEP: 13025-002","ts":"February 15, 2026 at 01:12 PM","phone_num":""},{"first":"Vilane","last":"Santos","email":"vilanevsantos@gmail.com","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"vilanevsantos@gmail.com","ts":"February 18, 2026 at 08:44 AM","phone_num":""},{"first":"Anderson","last":"Mello","email":"","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Marília","last":"Momesso","email":"","code":"VDGYADWJ","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Paula","last":"Peagno","email":"paula.peagno@gmail.com","code":"PGGZUNDO","gsize":2,"diet":"","note":"Será mto boooommmm","addr":"Rua padre Antônio Vieira 139 vila branca Jacareí cep 12301110","ts":"March 02, 2026 at 06:43 PM","phone_num":"+55 12 98156-7881"},{"first":"Rafael","last":"Oliveira","email":"","code":"PGGZUNDO","gsize":2,"diet":"","note":"Será mto boooommmm","addr":"Rua padre Antônio Vieira 139 vila branca Jacareí cep 12301110","ts":"March 02, 2026 at 06:43 PM","phone_num":""},{"first":"Luiz","last":"Whitney","email":"","code":"WHITNEY01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":39,"bracket":"13+"},{"first":"Andrew","last":"Whitney","email":"","code":"WHITNEY01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Rafael","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Andressa","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Samuel","last":"Longo","email":"","code":"LONGO01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":2,"bracket":"0-2"},{"first":"Fernando","last":"Santana","email":"","code":"SANTANA01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":38,"bracket":"13+"},{"first":"Gabriela","last":"Santana","email":"","code":"SANTANA01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":35,"bracket":"13+"},{"first":"Viviane","last":"Politi","email":"","code":"POLITI01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Cristiane","last":"Borges","email":"","code":"POLITI01","gsize":2,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Angela","last":"Fontana","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":70,"bracket":"13+"},{"first":"Luana","last":"Xavier","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":42,"bracket":"13+"},{"first":"Rafael","last":"Xavier","email":"","code":"FONTXAV01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":42,"bracket":"13+"},{"first":"Thais","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"+55 21 99911-6644"},{"first":"Suellen","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":""},{"first":"Catarina","last":"Moraes","email":"","code":"MORAES01","gsize":3,"diet":"","note":"","addr":"","ts":"","phone_num":"","age":7,"bracket":"6-9"},{"first":"Wendy","last":"Reed","email":"","code":"WENDY01","gsize":1,"diet":"","note":"","addr":"","ts":"","phone_num":""}];
 
 const GRP_COLORS = ['#1C6E71','#D96C4A','#7A8B4F','#C79A3B','#124B4D','#A84A2E','#4C7A3E','#8a6a1e'];
 const AGE_META = {
@@ -723,35 +758,123 @@ function renderGuestRows(q){
   const tb=document.getElementById('r-rows');
   // group by code, preserve first-seen order; assign a stable color per group
   const codes={}, order=[];
-  RSVP.forEach(g=>{ if(!codes[g.code]){codes[g.code]=[];order.push(g.code);} codes[g.code].push(g); });
-  let html='', shown=0, ci=0;
+  RSVP.forEach((g,idx)=>{ g._i=idx; if(!codes[g.code]){codes[g.code]=[];order.push(g.code);} codes[g.code].push(g); });
+  let html='', ci=0;
   order.forEach(code=>{
     const members=codes[code];
     const col=GRP_COLORS[ci % GRP_COLORS.length]; ci++;
     const match = members.filter(g=> !q || (g.first+' '+g.last+' '+g.email+' '+(g.phone_num||'')+' '+(g.diet||'')+' '+(g.note||'')).toLowerCase().includes(q));
     if(!match.length) return;
-    shown+=match.length;
     const lead = members[0];
     const fam = lead.last || (lead.first+"'s grupo");
-    html += `<tr class="grp-head"><td colspan="4"><div class="gh"><span class="swatch" style="background:${col}"></span>`+
+    html += `<tr class="grp-head"><td colspan="5"><div class="gh"><span class="swatch" style="background:${col}"></span>`+
             `Grupo ${fam} <span class="cnt">· ${members.length} pessoa${members.length>1?'s':''}</span></div></td></tr>`;
     match.forEach(g=>{
-      const diet = g.diet ? `<span class="chip diet">${g.diet}</span>` : '<span style="color:var(--cinza)">—</span>';
-      const email = g.email || '<span style="color:var(--cinza)">—</span>';
-      const phone = g.phone_num ? `<span class="gt-sub">${g.phone_num}</span>` : '<span style="color:var(--cinza)">—</span>';
-      const kid = (g.bracket && g.bracket!=='13+') ? `<span class="kid-badge">${g.age?g.age+' anos':AGE_META[g.bracket].lab}</span>` : '';
-      html += `<tr class="gmember" style="--gcol:${col}">
-        <td><span class="gt-name">${g.first} ${g.last}</span>${kid}</td>
-        <td class="gt-sub">${email}</td>
-        <td>${phone}</td>
-        <td>${diet}</td>
+      const ageVal = (g.age!==undefined && g.age!==null) ? g.age : '';
+      const isKid = (g.bracket && g.bracket!=='13+');
+      html += `<tr class="gmember${isKid?' is-kid':''}" style="--gcol:${col}">
+        <td class="ed-name">
+          <input class="ged" data-gi="${g._i}" data-f="first" value="${escAttr(g.first)}" placeholder="nome">
+          <input class="ged" data-gi="${g._i}" data-f="last" value="${escAttr(g.last)}" placeholder="sobrenome">
+        </td>
+        <td><input class="ged gt-sub" data-gi="${g._i}" data-f="email" value="${escAttr(g.email)}" placeholder="e-mail"></td>
+        <td><input class="ged gt-sub" data-gi="${g._i}" data-f="phone_num" value="${escAttr(g.phone_num)}" placeholder="telefone"></td>
+        <td><input class="ged" data-gi="${g._i}" data-f="diet" value="${escAttr(g.diet)}" placeholder="—"></td>
+        <td class="act-td"><div class="act-wrap">
+          <input class="ged ged-age" data-gi="${g._i}" data-f="age" value="${ageVal}" placeholder="id." title="idade (anos)" inputmode="numeric">
+          <button class="g-remove" data-remove="${g._i}" title="remover convidado" aria-label="remover">✕</button>
+        </div></td>
       </tr>`;
     });
   });
-  tb.innerHTML = html || '<tr><td colspan="4" style="text-align:center;color:var(--cinza);font-style:italic;padding:1.5rem">Nenhum convidado encontrado.</td></tr>';
+  tb.innerHTML = html || '<tr><td colspan="5" style="text-align:center;color:var(--cinza);font-style:italic;padding:1.5rem">Nenhum convidado encontrado.</td></tr>';
+}
+
+function escAttr(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// apply an inline edit to a guest field
+function editGuestField(i, field, value){
+  const g=RSVP[i]; if(!g) return;
+  if(field==='age'){
+    const v=value.trim();
+    if(v===''){ delete g.age; delete g.bracket; }
+    else{ const n=+v; if(!isNaN(n)){ g.age=n; g.bracket=bracketForAge(n); } }
+  } else {
+    g[field]=value;
+  }
+  persistRSVP();
+  // age changes affect the bracket panel + counts, so re-render those (debounced-ish)
+  if(field==='age'){ clearTimeout(window._agT); window._agT=setTimeout(renderRSVP, 400); }
+}
+
+function bracketForAge(age){
+  if(age===''||age===null||isNaN(age)) return null;
+  age=+age;
+  if(age<=2) return '0-2'; if(age<=5) return '3-5'; if(age<=9) return '6-9'; if(age<=12) return '10-12'; return '13+';
+}
+
+// populate the group dropdown from existing groups
+function refreshGroupSelect(){
+  const sel=document.getElementById('ag-group'); if(!sel) return;
+  const codes={}, order=[];
+  RSVP.forEach(g=>{ if(!codes[g.code]){codes[g.code]=g.last||g.first;order.push(g.code);} });
+  const cur=sel.value;
+  sel.innerHTML = order.map(c=>`<option value="${c}">Grupo ${codes[c]}</option>`).join('')
+    + '<option value="__new__">➕ Novo grupo…</option>';
+  if(cur && [...sel.options].some(o=>o.value===cur)) sel.value=cur;
+}
+
+function addGuest(){
+  const first=document.getElementById('ag-first').value.trim();
+  const last=document.getElementById('ag-last').value.trim();
+  const phone=document.getElementById('ag-phone').value.trim();
+  const ageRaw=document.getElementById('ag-age').value.trim();
+  let code=document.getElementById('ag-group').value;
+  if(!first){ alert('Digite ao menos o nome.'); return; }
+  if(code==='__new__'){
+    const ng=document.getElementById('ag-newgroup').value.trim();
+    if(!ng){ alert('Digite o nome do novo grupo.'); return; }
+    code='GRP'+Date.now();
+  }
+  const g={first,last,email:'',code,gsize:0,diet:'',note:'',addr:'',ts:'',phone_num:phone};
+  const br=bracketForAge(ageRaw);
+  if(br){ g.bracket=br; if(ageRaw!=='') g.age=+ageRaw; }
+  RSVP.push(g);
+  // recompute gsize
+  const cnt={}; RSVP.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1); RSVP.forEach(x=>x.gsize=cnt[x.code]);
+  persistRSVP();
+  // clear form
+  ['ag-first','ag-last','ag-phone','ag-age','ag-newgroup'].forEach(id=>document.getElementById(id).value='');
+  refreshGroupSelect(); renderRSVP();
+}
+
+function removeGuest(i){
+  const g=RSVP[i]; if(!g) return;
+  if(confirm(`Remover ${g.first} ${g.last} da lista?`)){
+    RSVP.splice(i,1);
+    const cnt={}; RSVP.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1); RSVP.forEach(x=>x.gsize=cnt[x.code]);
+    persistRSVP(); refreshGroupSelect(); renderRSVP();
+  }
+}
+
+// RSVP list is stored separately so guest edits survive alongside budget data
+function persistRSVP(){
+  try{ localStorage.setItem(KEY+'_rsvp', JSON.stringify(RSVP)); }catch(e){}
+  setStatus('saved','Salvo '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
 }
 
 document.getElementById('r-search').addEventListener('input',e=>renderGuestRows(e.target.value));
+document.getElementById('r-rows').addEventListener('click',e=>{ if(e.target.dataset.remove!==undefined) removeGuest(+e.target.dataset.remove); });
+document.getElementById('r-rows').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList.contains('ged') && t.dataset.gi!==undefined){
+    editGuestField(+t.dataset.gi, t.dataset.f, t.value);
+  }
+});
+document.getElementById('ag-add').onclick=addGuest;
+document.getElementById('ag-group').addEventListener('change',e=>{
+  document.getElementById('ag-newgroup').style.display = e.target.value==='__new__' ? 'block' : 'none';
+});
 
 // tab switching
 document.querySelectorAll('.tab').forEach(t=>{
@@ -763,6 +886,13 @@ document.querySelectorAll('.tab').forEach(t=>{
   };
 });
 
+// load any saved guest edits (adds/removes) so they persist across reloads
+try{
+  const savedR=localStorage.getItem(KEY+'_rsvp');
+  if(savedR){ const arr=JSON.parse(savedR); if(Array.isArray(arr)&&arr.length) RSVP=arr; }
+}catch(e){}
+
+refreshGroupSelect();
 renderRSVP();
 
 </script>
