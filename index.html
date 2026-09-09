@@ -161,7 +161,23 @@
   .histrow button{font-family:var(--f-body);font-size:12px;font-weight:600;border:1.5px solid var(--mar);
     background:transparent;color:var(--mar-esc);padding:.4rem .8rem;border-radius:8px;cursor:pointer;flex:0 0 auto}
   .histrow button:hover{background:var(--mar);color:#fff}
+  .histrow{align-items:flex-start}
+  .histmain{flex:1;min-width:0}
+  .histrow .reason{font-size:12px;color:var(--tinta);font-weight:600;margin:.15rem 0 .1rem}
+  .histrow .chgs{display:flex;flex-direction:column;gap:2px;margin:.25rem 0 .35rem}
+  .logchg{font-size:11.5px;color:var(--carvao);font-family:var(--f-body);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;line-height:1.3}
+  .logdot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+  .logwhat{color:var(--tinta)}
+  .lg-from{font-family:var(--f-data);color:var(--cinza);text-decoration:line-through}
+  .lg-to{font-family:var(--f-data);color:var(--mar-esc);font-weight:600}
+  .logmore{font-size:11px;color:var(--cinza);font-style:italic;margin-top:2px}
+  .areatag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ac);
+    border:1px solid var(--ac);border-radius:5px;padding:1px 5px;margin-left:.35rem;vertical-align:middle}
   .histempty{color:var(--cinza);font-style:italic;font-size:.9rem;padding:1rem 0;text-align:center}
+  /* locked auto-row (Compras total) in budget */
+  tr.locked-row td{background:repeating-linear-gradient(45deg,rgba(199,154,59,.06),rgba(199,154,59,.06) 8px,rgba(199,154,59,.11) 8px,rgba(199,154,59,.11) 16px);color:var(--carvao)}
+  tr.locked-row .lockcell{font-weight:600;color:var(--dourado-esc,#8a6a1e)}
+  tr.obs-row.locked-row td{font-size:11px;color:var(--cinza);font-style:italic;background:rgba(199,154,59,.05)}
   /* add-guest form */
   .addguest{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:center}
   .ag-in{font-family:var(--f-body);font-size:.9rem;padding:.55rem .7rem;border:1px solid var(--linha);
@@ -186,6 +202,10 @@
   .act-wrap{display:flex;align-items:center;gap:.2rem;justify-content:flex-end}
   .act-wrap .ged-age{width:46px!important}
   .gmember.is-kid .ged-age{background:rgba(122,139,79,.14);color:#54632f;font-weight:600;border-radius:7px}
+  .gmember.is-bought td{opacity:.6}
+  .gmember.is-bought .c-tot{opacity:1;color:var(--verde-ok);font-weight:600}
+  .c-tot{font-family:var(--f-data);font-variant-numeric:tabular-nums;text-align:right;font-weight:500;color:var(--carvao);white-space:nowrap}
+  .c-check{width:18px;height:18px;accent-color:var(--mar);cursor:pointer}
 
   /* ---- Tabs ---- */
   .tabs{display:flex;gap:.4rem;margin:.5rem 0 1.75rem;border-bottom:1.5px solid var(--linha)}
@@ -287,6 +307,7 @@
 <div class="tabs">
   <button class="tab on" data-tab="planner">Orçamento</button>
   <button class="tab" data-tab="rsvp">Convidados · RSVP</button>
+  <button class="tab" data-tab="compras">Compras</button>
 </div>
 
 <div class="tabpane on" id="tab-planner">
@@ -301,7 +322,7 @@
   <div class="tetorow">
     <label for="teto">Teto de orçamento</label>
     <span class="num" style="font-size:1.15rem">R$</span>
-    <input id="teto" class="num" value="35400" inputmode="numeric">
+    <input id="teto" class="num" value="37040" inputmode="numeric">
     <span class="num" style="margin-left:auto;color:var(--cinza);font-size:.9rem">Custo por convidado: <b id="s-perhead" style="color:var(--carvao)">R$ 0</b></span>
   </div>
   <div class="track" aria-hidden="true">
@@ -356,7 +377,7 @@
 <div class="toolbar">
   <span class="savestatus" id="savestatus"><span class="dot"></span><span id="savetext">Salvo</span></span>
   <button class="btn" id="savebtn">Salvar agora</button>
-  <button class="btn ghost" id="history">Histórico de versões</button>
+  <button class="btn ghost" id="history">Histórico &amp; log</button>
   <button class="btn ghost" id="export">Baixar backup</button>
   <button class="btn ghost" id="import">Importar backup</button>
   <button class="btn ghost" id="reset" style="border-color:var(--vermelho);color:var(--vermelho)">Restaurar dados dos contratos</button>
@@ -367,10 +388,10 @@
 <div class="modal-bg" id="histmodal">
   <div class="modal">
     <div class="modal-head">
-      <h3>Histórico de versões</h3>
+      <h3>Histórico &amp; log de alterações</h3>
       <button class="modal-x" id="histclose">✕</button>
     </div>
-    <p class="modal-sub">Cada vez que você salva, uma versão fica guardada aqui. Clique em "Restaurar" para voltar a qualquer momento. As 30 versões mais recentes são mantidas.</p>
+    <p class="modal-sub">Cada salvamento registra <b>quando</b>, <b>em qual aba</b> e <b>o que mudou</b> (valor antigo → novo). Clique em "Restaurar" para voltar o orçamento, os convidados e as compras ao estado daquele momento. Os 120 registros mais recentes são mantidos.</p>
     <div id="histlist" class="histlist"></div>
   </div>
 </div>
@@ -426,6 +447,37 @@
   </div>
 </div><!-- /tab-rsvp -->
 
+<div class="tabpane" id="tab-compras">
+  <div class="rsvp-hero" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+    <div class="stat"><div class="lab">Total das compras</div><div class="val num" id="c-total">R$ 0</div></div>
+    <div class="stat"><div class="lab">Já comprado</div><div class="val num mar" id="c-bought">R$ 0</div></div>
+    <div class="stat"><div class="lab">Falta comprar</div><div class="val num coral" id="c-left">R$ 0</div></div>
+    <div class="stat"><div class="lab">Itens na lista</div><div class="val num" id="c-count">0</div></div>
+  </div>
+
+  <div class="panel">
+    <h3>Lista de compras</h3>
+    <p class="modal-sub" style="margin-bottom:1rem">Preencha o preço conforme for comprando e marque ✓ quando comprar. O total entra automaticamente no Orçamento (linha "Compras / mercado") e conta no custo da festa.</p>
+
+    <div class="addguest">
+      <input type="text" id="cp-item" class="ag-in" placeholder="Item" style="flex:2">
+      <input type="number" id="cp-qty" class="ag-in ag-age" placeholder="Qtd" min="0">
+      <input type="text" id="cp-unit" class="ag-in" placeholder="Categoria (ex: Bebidas)">
+      <button class="btn" id="cp-add">+ Adicionar</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="guest-table" id="compras-table">
+        <thead><tr>
+          <th style="width:34%">Item</th><th style="width:70px">Qtd</th><th style="width:16%">Categoria</th>
+          <th style="width:120px">Preço unit.</th><th style="width:120px">Total</th><th style="width:60px">✓</th><th style="width:40px"></th>
+        </tr></thead>
+        <tbody id="c-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /tab-compras -->
+
 <footer>
   Planejamento salvo automaticamente neste navegador · praia de Paúba, 19 de setembro de 2026
 </footer>
@@ -472,9 +524,11 @@ const SEED = {
   ]
 };
 
-const HKEY = KEY + "_history";
+const HKEY = KEY + "_history";   // (legacy) full-snapshot versions
+const LKEY = KEY + "_log";       // granular audit log (what/when/why)
 let D = load();
 let dirty = false, saveT, statusT;
+let pendingChanges = [];         // buffer of field-level changes since last write
 
 function load(){
   try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):structuredClone(SEED); }
@@ -490,60 +544,102 @@ function setStatus(state, text){
   if(btn) btn.classList.toggle('hidden', state==='saved');
 }
 
-// write current data to localStorage (called by autosave and manual save)
-function persist(){
+function nowStr(){ const t=new Date(); return t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+
+// ---- AUDIT LOG: record a single field-level change (what changed) ----
+// area: 'orcamento' | 'convidados' | 'compras' | 'sistema'
+function logChange(area, what, from, to){
+  pendingChanges.push({ area, what,
+    from:(from===undefined||from===null?'':String(from)),
+    to:(to===undefined||to===null?'':String(to)) });
+}
+
+// write everything to localStorage at once (budget + guests + compras)
+function persistAll(reason){
   try{
     localStorage.setItem(KEY, JSON.stringify(D));
+    if(typeof RSVP!=='undefined') localStorage.setItem(KEY+'_rsvp', JSON.stringify(RSVP));
+    if(typeof COMPRAS!=='undefined') localStorage.setItem(KEY+'_compras', JSON.stringify(COMPRAS));
     dirty=false;
-    const t=new Date();
-    setStatus('saved','Salvo '+t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+    commitLog(reason||'edição');
+    setStatus('saved','Salvo '+nowStr());
     return true;
   }catch(e){ setStatus('unsaved','Erro ao salvar'); return false; }
 }
 
-// mark data changed: autosave after a short pause, and reflect "não salvo" immediately
-function save(){
+// fold buffered field changes into one log batch + a restorable snapshot
+function commitLog(reason){
+  if(!pendingChanges.length && reason==='edição') return;
+  try{
+    const prev=D.itens.reduce((a,b)=>a+b.qtd*b.vu,0);
+    const paid=D.itens.reduce((a,b)=>a+b.pago,0);
+    const guests=(typeof RSVP!=='undefined')?RSVP.length:0;
+    const entry={ ts:Date.now(), reason:reason||'edição',
+      changes:pendingChanges.slice(0,60), nchanges:pendingChanges.length,
+      prev, paid, guests,
+      snap:JSON.stringify({ D,
+        RSVP:(typeof RSVP!=='undefined'?RSVP:null),
+        COMPRAS:(typeof COMPRAS!=='undefined'?COMPRAS:null) }) };
+    let log=JSON.parse(localStorage.getItem(LKEY)||'[]');
+    log.unshift(entry);
+    log=log.slice(0,120);
+    localStorage.setItem(LKEY, JSON.stringify(log));
+  }catch(e){}
+  pendingChanges=[];
+}
+
+// mark data changed: autosave after a short pause
+function save(reason){
   dirty=true;
   setStatus('unsaved','Não salvo…');
   clearTimeout(saveT);
-  saveT=setTimeout(()=>{ persist(); }, 800);
+  saveT=setTimeout(()=>{ persistAll(reason); }, 800);
 }
-
-// snapshot into history (called on manual save)
-function snapshot(){
-  try{
-    let hist=JSON.parse(localStorage.getItem(HKEY)||'[]');
-    const prev=D.itens.reduce((a,b)=>a+b.qtd*b.vu,0);
-    const paid=D.itens.reduce((a,b)=>a+b.pago,0);
-    hist.unshift({ ts:Date.now(), prev, paid, data:JSON.stringify(D) });
-    hist=hist.slice(0,30); // keep last 30
-    localStorage.setItem(HKEY, JSON.stringify(hist));
-  }catch(e){}
-}
+function persist(){ return persistAll('edição'); } // back-compat alias
 
 function manualSave(){
   clearTimeout(saveT);
-  if(persist()) snapshot();
-  const b=document.getElementById('savebtn');
-  if(b){ const o=b.textContent; b.textContent='✓ Salvo'; setTimeout(()=>b.textContent=o,1200); }
+  if(persistAll('salvamento manual')){
+    const b=document.getElementById('savebtn');
+    if(b){ const o=b.textContent; b.textContent='✓ Salvo'; setTimeout(()=>b.textContent=o,1200); }
+  }
 }
 
-// warn before leaving with unsaved changes
 window.addEventListener('beforeunload', e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
 
-// history modal
+// ---- LOG / HISTORY MODAL ----
+const AREA_META={
+  orcamento:{lab:'Orçamento',col:'#1C6E71'},
+  convidados:{lab:'Convidados',col:'#D96C4A'},
+  compras:{lab:'Compras',col:'#C79A3B'},
+  sistema:{lab:'Sistema',col:'#8A8776'}
+};
 function openHistory(){
   const list=document.getElementById('histlist');
-  let hist=[];
-  try{ hist=JSON.parse(localStorage.getItem(HKEY)||'[]'); }catch(e){}
-  if(!hist.length){ list.innerHTML='<div class="histempty">Nenhuma versão salva ainda. Clique em "Salvar agora" para criar a primeira.</div>'; }
+  let log=[];
+  try{ log=JSON.parse(localStorage.getItem(LKEY)||'[]'); }catch(e){}
+  if(!log.length){ list.innerHTML='<div class="histempty">Nenhum registro ainda. Cada alteração salva aparece aqui com data, hora e o que mudou.</div>'; }
   else{
-    list.innerHTML=hist.map((v,i)=>{
+    const brl=n=>Math.round(n).toLocaleString('pt-BR');
+    list.innerHTML=log.map((v,i)=>{
       const d=new Date(v.ts);
-      const when=d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      const brl=n=>Math.round(n).toLocaleString('pt-BR');
+      const when=d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      const chips=(v.changes||[]).slice(0,8).map(c=>{
+        const m=AREA_META[c.area]||AREA_META.sistema;
+        const arrow=(c.from!==''||c.to!=='')?` <span class="lg-from">${esc(c.from)||'∅'}</span> → <span class="lg-to">${esc(c.to)||'∅'}</span>`:'';
+        return `<div class="logchg"><span class="logdot" style="background:${m.col}"></span><span class="logwhat">${esc(c.what)}</span>${arrow}</div>`;
+      }).join('');
+      const more=(v.nchanges>8)?`<div class="logmore">+${v.nchanges-8} outra(s) alteração(ões)</div>`:'';
+      const areas=[...new Set((v.changes||[]).map(c=>c.area))].map(a=>{
+        const m=AREA_META[a]||AREA_META.sistema; return `<span class="areatag" style="--ac:${m.col}">${m.lab}</span>`;
+      }).join('');
       return `<div class="histrow">
-        <div><div class="when">${when}</div><div class="meta">Previsto R$ ${brl(v.prev)} · Pago R$ ${brl(v.paid)}</div></div>
+        <div class="histmain">
+          <div class="when">${when} ${areas}</div>
+          <div class="reason">${esc(v.reason||'edição')}${v.nchanges?` · ${v.nchanges} alteração(ões)`:''}</div>
+          <div class="chgs">${chips}${more}</div>
+          <div class="meta">Previsto R$ ${brl(v.prev)} · Pago R$ ${brl(v.paid)} · ${v.guests||0} convidados</div>
+        </div>
         <button data-restore="${i}">Restaurar</button>
       </div>`;
     }).join('');
@@ -552,18 +648,25 @@ function openHistory(){
 }
 function restoreVersion(i){
   try{
-    const hist=JSON.parse(localStorage.getItem(HKEY)||'[]');
-    if(hist[i]){
-      if(confirm('Restaurar esta versão? O estado atual será substituído (mas você pode salvar antes para guardá-lo no histórico).')){
-        D=JSON.parse(hist[i].data);
-        renderAll();
-        document.getElementById('teto').value=D.teto;
-        document.getElementById('conv').value=D.conv;
-        manualSave();
-        document.getElementById('histmodal').classList.remove('on');
-      }
-    }
-  }catch(e){}
+    const log=JSON.parse(localStorage.getItem(LKEY)||'[]');
+    if(!log[i]) return;
+    const d=new Date(log[i].ts);
+    const when=d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    if(!confirm('Restaurar o estado de '+when+'?\n\nIsto substitui orçamento, convidados e compras pelo que estava salvo naquele momento. O estado atual é registrado no log antes de restaurar, então dá para desfazer.')) return;
+    persistAll('antes de restaurar');
+    const snap=JSON.parse(log[i].snap);
+    if(snap.D) D=snap.D;
+    if(snap.RSVP && typeof RSVP!=='undefined') RSVP=snap.RSVP;
+    if(snap.COMPRAS && typeof COMPRAS!=='undefined') COMPRAS=snap.COMPRAS;
+    renderAll();
+    if(typeof renderRSVP==='function') renderRSVP();
+    if(typeof renderCompras==='function') renderCompras();
+    document.getElementById('teto').value=D.teto;
+    const cv=document.getElementById('conv'); if(cv) cv.value=D.conv;
+    pendingChanges=[{area:'sistema',what:'Estado restaurado para '+when,from:'',to:''}];
+    persistAll('restauração de versão');
+    document.getElementById('histmodal').classList.remove('on');
+  }catch(e){ alert('Não foi possível restaurar esta versão.'); }
 }
 
 
@@ -578,6 +681,23 @@ function renderItens(){
   D.itens.forEach((it,i)=>{
     const prev=it.qtd*it.vu, falta=prev-it.pago;
     const tr=document.createElement('tr');
+    if(it._compras){
+      tr.className='locked-row';
+      tr.innerHTML=`
+      <td data-l="Item"><span class="lockcell">🔒 ${esc(it.item)}</span></td>
+      <td data-l="Categoria">${esc(it.cat)}</td>
+      <td data-l="Qtd" class="r">—</td>
+      <td data-l="Valor unit." class="r">${brl(it.vu)}</td>
+      <td data-l="Previsto" class="calc">${brl(prev)}</td>
+      <td data-l="Pago" class="r">${brl(it.pago)}</td>
+      <td data-l="Falta" class="calc ${falta>0?'falta-c':''}">${brl(falta)}</td>
+      <td class="act"></td>`;
+      tb.appendChild(tr);
+      const or=document.createElement('tr'); or.className='obs-row locked-row';
+      or.innerHTML=`<td colspan="8" data-l="">↳ atualizado automaticamente pela aba <b>Compras</b>. Marcados como comprados contam como pagos.</td>`;
+      tb.appendChild(or);
+      return;
+    }
     tr.innerHTML=`
       <td data-l="Item"><input class="cell" data-i="${i}" data-f="item" value="${esc(it.item)}"></td>
       <td data-l="Categoria"><select class="cell" data-i="${i}" data-f="cat">${CATS.map(c=>`<option ${c===it.cat?'selected':''}>${c}</option>`).join('')}</select></td>
@@ -638,22 +758,30 @@ function renderTop(){
 function renderAll(){renderItens();renderPags();renderTop();}
 
 // events
+const FLABEL={qtd:'quantidade',vu:'valor unit.',pago:'pago',item:'nome',cat:'categoria',obs:'observação',
+  data:'data',desc:'descrição',forn:'fornecedor',val:'valor',st:'status'};
 document.body.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.i!==undefined && t.dataset.f){
     const i=+t.dataset.i,f=t.dataset.f;
+    const it=D.itens[i]; if(it && it._compras){ t.value=(f==='vu'||f==='pago')?brl(it[f]):(f==='qtd'?it.qtd:it[f]); return; } // locked line
+    const before=it?it[f]:'';
     if(f==='qtd'||f==='vu'||f==='pago'){D.itens[i][f]=parseNum(t.value);}
     else{D.itens[i][f]=t.value;}
+    const label=(it?it.item:'item');
+    logChange('orcamento', `${label} · ${FLABEL[f]||f}`, (f==='qtd'||f==='vu'||f==='pago')?brl(before):before, (f==='qtd'||f==='vu'||f==='pago')?brl(D.itens[i][f]):D.itens[i][f]);
     if(f==='qtd'||f==='vu'||f==='pago') renderTopSoft(i); else save();
   }
   if(t.dataset.pi!==undefined && t.dataset.f){
     const i=+t.dataset.pi,f=t.dataset.f;
+    const before=D.pags[i]?D.pags[i][f]:'';
     D.pags[i][f]= f==='val'?parseNum(t.value):t.value;
+    logChange('orcamento', `pagamento: ${D.pags[i].desc||''} · ${FLABEL[f]||f}`, f==='val'?brl(before):before, f==='val'?brl(D.pags[i][f]):D.pags[i][f]);
     if(f==='val'||f==='st') document.getElementById('pg-total').textContent='R$ '+brl(D.pags.filter(p=>p.st==='Pago').reduce((a,b)=>a+b.val,0));
     save();
   }
-  if(t.id==='teto'){D.teto=parseNum(t.value);renderTop();save();}
-  if(t.id==='conv'){D.conv=parseNum(t.value)||0;renderTop();save();}
+  if(t.id==='teto'){const b=D.teto;D.teto=parseNum(t.value);logChange('orcamento','teto de orçamento',brl(b),brl(D.teto));renderTop();save();}
+  if(t.id==='conv'){const b=D.conv;D.conv=parseNum(t.value)||0;logChange('orcamento','nº de convidados (orçamento)',b,D.conv);renderTop();save();}
 });
 // recalc row calc cells live without full re-render (keeps focus)
 function renderTopSoft(i){
@@ -668,21 +796,43 @@ function renderTopSoft(i){
   renderTop(); save();
 }
 document.body.addEventListener('change',e=>{
-  if(e.target.dataset.f==='cat'||e.target.dataset.f==='st'){save();}
-  if(e.target.dataset.f==='data'){renderPags();save();}
+  const t=e.target;
+  if(t.dataset.i!==undefined && (t.dataset.f==='cat')){ logChange('orcamento',`${D.itens[+t.dataset.i].item} · categoria`,'',t.value); save(); }
+  if(t.dataset.pi!==undefined && (t.dataset.f==='st')){ logChange('orcamento',`pagamento: ${D.pags[+t.dataset.pi].desc||''} · status`,'',t.value); save(); }
+  if(t.dataset.pi!==undefined && t.dataset.f==='data'){ logChange('orcamento',`pagamento: ${D.pags[+t.dataset.pi].desc||''} · data`,'',t.value); renderPags(); save(); }
 });
 document.body.addEventListener('click',e=>{
   const t=e.target;
-  if(t.dataset.delI!==undefined){D.itens.splice(+t.dataset.delI,1);renderAll();save();}
-  if(t.dataset.delpI!==undefined){D.pags.splice(+t.dataset.delpI,1);renderAll();save();}
+  if(t.dataset.delI!==undefined){ const it=D.itens[+t.dataset.delI]; if(it&&it._compras){ alert('Esta linha é o total automático da aba Compras. Para alterá-la, use a aba Compras.'); return; } if(!confirm(`Remover o item "${it?it.item:''}" do orçamento?`)) return; logChange('orcamento','item removido',it?it.item:'',''); D.itens.splice(+t.dataset.delI,1);renderAll();save();}
+  if(t.dataset.delpI!==undefined){ const p=D.pags[+t.dataset.delpI]; if(!confirm(`Remover o pagamento "${p?p.desc:''}"?`)) return; logChange('orcamento','pagamento removido',p?p.desc:'',''); D.pags.splice(+t.dataset.delpI,1);renderAll();save();}
 });
-document.getElementById('add-item').onclick=()=>{D.itens.push({item:"Novo item",cat:"Outros",qtd:1,vu:0,pago:0,obs:""});renderAll();save();
+document.getElementById('add-item').onclick=()=>{D.itens.push({item:"Novo item",cat:"Outros",qtd:1,vu:0,pago:0,obs:""});logChange('orcamento','item adicionado','','Novo item');renderAll();save();
   const rows=document.querySelectorAll('#itens [data-f="item"]');rows[rows.length-1].focus();};
-document.getElementById('add-pag').onclick=()=>{D.pags.push({data:"2026-09-19",desc:"Novo pagamento",forn:"",val:0,st:"Agendado"});renderAll();save();};
-document.getElementById('reset').onclick=()=>{if(confirm('Restaurar todos os dados originais dos contratos? Suas edições serão perdidas.')){D=structuredClone(SEED);renderAll();save();document.getElementById('teto').value=D.teto;document.getElementById('conv').value=D.conv;}};
-document.getElementById('export').onclick=()=>{const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');const ds=new Date().toISOString().slice(0,10);a.href=URL.createObjectURL(b);a.download='festa-pauba-backup-'+ds+'.json';a.click();};
+document.getElementById('add-pag').onclick=()=>{D.pags.push({data:"2026-09-19",desc:"Novo pagamento",forn:"",val:0,st:"Agendado"});logChange('orcamento','pagamento adicionado','','Novo pagamento');renderAll();save();};
+document.getElementById('reset').onclick=()=>{if(confirm('Restaurar todos os dados originais dos contratos? Suas edições no orçamento serão perdidas (convidados e compras não mudam).')){D=structuredClone(SEED);pendingChanges=[{area:'sistema',what:'Orçamento restaurado aos dados originais dos contratos',from:'',to:''}];renderAll();persistAll('restauração dos contratos');document.getElementById('teto').value=D.teto;document.getElementById('conv').value=D.conv;}};
+// full backup: budget + guests + compras + log
+document.getElementById('export').onclick=()=>{
+  const backup={ _app:'festa-pauba', _v:6, _exportedAt:new Date().toISOString(),
+    D, RSVP:(typeof RSVP!=='undefined'?RSVP:[]), COMPRAS:(typeof COMPRAS!=='undefined'?COMPRAS:[]),
+    log:JSON.parse(localStorage.getItem(LKEY)||'[]') };
+  const b=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const a=document.createElement('a');const ds=new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+  a.href=URL.createObjectURL(b);a.download='festa-pauba-backup-'+ds+'.json';a.click();
+};
 document.getElementById('import').onclick=()=>document.getElementById('file').click();
-document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{D=JSON.parse(r.result);renderAll();manualSave();document.getElementById('teto').value=D.teto;document.getElementById('conv').value=D.conv;}catch(err){alert('Arquivo inválido.');}};r.readAsText(f);};
+document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{
+  const obj=JSON.parse(r.result);
+  if(obj && obj._app==='festa-pauba'){ // new full-backup format
+    if(obj.D) D=obj.D;
+    if(obj.RSVP && typeof RSVP!=='undefined') RSVP=obj.RSVP;
+    if(obj.COMPRAS && typeof COMPRAS!=='undefined') COMPRAS=obj.COMPRAS;
+    if(obj.log){ try{ localStorage.setItem(LKEY, JSON.stringify(obj.log)); }catch(_){}}
+  } else { D=obj; } // legacy budget-only backup
+  renderAll(); if(typeof renderRSVP==='function') renderRSVP(); if(typeof renderCompras==='function') renderCompras();
+  document.getElementById('teto').value=D.teto;const cv=document.getElementById('conv');if(cv)cv.value=D.conv;
+  pendingChanges=[{area:'sistema',what:'Backup importado de arquivo',from:'',to:f.name}];
+  persistAll('importação de backup');
+}catch(err){alert('Arquivo inválido.');}};r.readAsText(f);};
 
 // advanced save + history wiring
 document.getElementById('savebtn').onclick=manualSave;
@@ -692,6 +842,9 @@ document.getElementById('histmodal').addEventListener('click',e=>{ if(e.target.i
 document.getElementById('histlist').addEventListener('click',e=>{ if(e.target.dataset.restore!==undefined) restoreVersion(+e.target.dataset.restore); });
 
 renderAll();
+// sync editable header inputs to the real data (avoids stale HTML defaults)
+(function(){ const te=document.getElementById('teto'); if(te) te.value=D.teto;
+  const cv=document.getElementById('conv'); if(cv) cv.value=D.conv; })();
 setStatus('saved','Salvo');
 
 
@@ -793,8 +946,11 @@ function renderGuestRows(q){
 function escAttr(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
 // apply an inline edit to a guest field
+const GLABEL={first:'nome',last:'sobrenome',email:'e-mail',phone_num:'telefone',diet:'restrição',age:'idade'};
 function editGuestField(i, field, value){
   const g=RSVP[i]; if(!g) return;
+  const who=(g.first+' '+g.last).trim();
+  const before=(field==='age')?(g.age??''):(g[field]||'');
   if(field==='age'){
     const v=value.trim();
     if(v===''){ delete g.age; delete g.bracket; }
@@ -802,8 +958,8 @@ function editGuestField(i, field, value){
   } else {
     g[field]=value;
   }
+  logChange('convidados', `${who||'convidado'} · ${GLABEL[field]||field}`, before, value);
   persistRSVP();
-  // age changes affect the bracket panel + counts, so re-render those (debounced-ish)
   if(field==='age'){ clearTimeout(window._agT); window._agT=setTimeout(renderRSVP, 400); }
 }
 
@@ -842,6 +998,7 @@ function addGuest(){
   RSVP.push(g);
   // recompute gsize
   const cnt={}; RSVP.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1); RSVP.forEach(x=>x.gsize=cnt[x.code]);
+  logChange('convidados','convidado adicionado','',(first+' '+last).trim());
   persistRSVP();
   // clear form
   ['ag-first','ag-last','ag-phone','ag-age','ag-newgroup'].forEach(id=>document.getElementById(id).value='');
@@ -851,16 +1008,19 @@ function addGuest(){
 function removeGuest(i){
   const g=RSVP[i]; if(!g) return;
   if(confirm(`Remover ${g.first} ${g.last} da lista?`)){
+    logChange('convidados','convidado removido',(g.first+' '+g.last).trim(),'');
     RSVP.splice(i,1);
     const cnt={}; RSVP.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1); RSVP.forEach(x=>x.gsize=cnt[x.code]);
     persistRSVP(); refreshGroupSelect(); renderRSVP();
   }
 }
 
-// RSVP list is stored separately so guest edits survive alongside budget data
+// RSVP list is stored separately so guest edits survive alongside budget data.
+// Write immediately for safety AND schedule a logged autosave so the change
+// lands in the audit log with the other datasets.
 function persistRSVP(){
   try{ localStorage.setItem(KEY+'_rsvp', JSON.stringify(RSVP)); }catch(e){}
-  setStatus('saved','Salvo '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+  save('edição de convidados');
 }
 
 document.getElementById('r-search').addEventListener('input',e=>renderGuestRows(e.target.value));
@@ -894,6 +1054,129 @@ try{
 
 refreshGroupSelect();
 renderRSVP();
+
+// ===== COMPRAS (shopping list) =====
+const COMPRAS_SEED = [
+  {item:'Cerveja Heineken lata 269ml',qty:300,cat:'Bebidas',unit:0,bought:false},
+  {item:'Coca-Cola normal lata',qty:45,cat:'Bebidas',unit:0,bought:false},
+  {item:'Coca-Cola Zero lata',qty:30,cat:'Bebidas',unit:0,bought:false},
+  {item:'Guaraná lata',qty:25,cat:'Bebidas',unit:0,bought:false},
+  {item:'Água 2L sem gás',qty:30,cat:'Bebidas',unit:0,bought:false},
+  {item:'Água 2L com gás',qty:15,cat:'Bebidas',unit:0,bought:false},
+  {item:'Suco (caixa 1L)',qty:20,cat:'Bebidas',unit:0,bought:false},
+  {item:'Gelo (pacote 20kg)',qty:6,cat:'Bebidas',unit:0,bought:false},
+  {item:'Saco de lixo 100L',qty:2,cat:'Descartáveis',unit:0,bought:false},
+  {item:'Papel higiênico',qty:1,cat:'Descartáveis',unit:0,bought:false},
+  {item:'Guardanapo',qty:2,cat:'Descartáveis',unit:0,bought:false},
+  {item:'Pratos de churrasco',qty:80,cat:'Descartáveis',unit:0,bought:false},
+  {item:'Garfo descartável',qty:80,cat:'Descartáveis',unit:0,bought:false},
+  {item:'Faca descartável',qty:80,cat:'Descartáveis',unit:0,bought:false},
+  {item:'Colher descartável',qty:80,cat:'Descartáveis',unit:0,bought:false}
+];
+let COMPRAS = loadCompras();
+function loadCompras(){
+  try{ const r=localStorage.getItem(KEY+'_compras'); if(r){const a=JSON.parse(r); if(Array.isArray(a)) return a;} }catch(e){}
+  return structuredClone(COMPRAS_SEED);
+}
+function persistCompras(){
+  try{ localStorage.setItem(KEY+'_compras', JSON.stringify(COMPRAS)); }catch(e){}
+  save('edição de compras');
+}
+
+function comprasTotals(){
+  let total=0, bought=0;
+  COMPRAS.forEach(c=>{ const t=(+c.qty||0)*(+c.unit||0); total+=t; if(c.bought) bought+=t; });
+  return {total, bought, left: total-bought};
+}
+
+// push the shopping total into the budget as ONE line, then refresh budget
+function syncComprasToBudget(){
+  const {total, bought} = comprasTotals();
+  let line = D.itens.find(x=>x._compras===true);
+  if(total<=0){
+    if(line){ D.itens = D.itens.filter(x=>x._compras!==true); }
+  } else {
+    if(!line){ line={_compras:true,item:'Compras / mercado',cat:'Buffet & Bebidas',qtd:1,vu:0,pago:0,obs:'Somatório automático da aba Compras.'}; D.itens.push(line); }
+    line.vu=total; line.qtd=1; line.pago=bought;
+    line.obs='Somatório automático da aba Compras (bebidas + descartáveis). Editar na aba Compras.';
+  }
+  save();          // autosave budget
+  renderTop();     // update header totals
+  renderItens();   // update budget table
+}
+
+function renderCompras(){
+  const tb=document.getElementById('c-rows');
+  const brl=n=>Math.round(n).toLocaleString('pt-BR');
+  // group by category
+  const cats={}, order=[];
+  COMPRAS.forEach((c,i)=>{ c._i=i; if(!cats[c.cat]){cats[c.cat]=[];order.push(c.cat);} cats[c.cat].push(c); });
+  let html='';
+  order.forEach(cat=>{
+    html+=`<tr class="grp-head"><td colspan="7"><div class="gh"><span class="swatch" style="background:var(--dourado)"></span>${cat}</div></td></tr>`;
+    cats[cat].forEach(c=>{
+      const tot=(+c.qty||0)*(+c.unit||0);
+      html+=`<tr class="gmember${c.bought?' is-bought':''}">
+        <td><input class="ged" data-ci="${c._i}" data-f="item" value="${escAttr(c.item)}" placeholder="item"></td>
+        <td><input class="ged ged-age" data-ci="${c._i}" data-f="qty" value="${c.qty}" inputmode="numeric" style="width:100%!important"></td>
+        <td><input class="ged gt-sub" data-ci="${c._i}" data-f="cat" value="${escAttr(c.cat)}"></td>
+        <td><input class="ged" data-ci="${c._i}" data-f="unit" value="${c.unit||''}" placeholder="R$ 0,00" inputmode="decimal"></td>
+        <td class="c-tot num">R$ ${brl(tot)}</td>
+        <td style="text-align:center"><input type="checkbox" class="c-check" data-ci="${c._i}" ${c.bought?'checked':''}></td>
+        <td class="act-td"><button class="g-remove" data-cremove="${c._i}" title="remover" aria-label="remover">✕</button></td>
+      </tr>`;
+    });
+  });
+  tb.innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:var(--cinza);font-style:italic;padding:1.5rem">Lista vazia. Adicione itens acima.</td></tr>';
+  const t=comprasTotals();
+  document.getElementById('c-total').textContent='R$ '+brl(t.total);
+  document.getElementById('c-bought').textContent='R$ '+brl(t.bought);
+  document.getElementById('c-left').textContent='R$ '+brl(t.left);
+  document.getElementById('c-count').textContent=COMPRAS.length;
+}
+
+const CLABEL={item:'item',qty:'quantidade',cat:'categoria',unit:'preço unit.'};
+function editCompra(i,f,v){
+  const c=COMPRAS[i]; if(!c) return;
+  const before=c[f];
+  if(f==='qty'||f==='unit'){ c[f]=parseFloat(String(v).replace(',','.'))||0; }
+  else{ c[f]=v; }
+  logChange('compras', `${c.item||'item'} · ${CLABEL[f]||f}`, before, c[f]);
+  persistCompras();
+  // update the row total cell live + budget, without full re-render (keep focus)
+  const row=document.querySelector(`[data-ci="${i}"][data-f="item"]`)?.closest('tr');
+  if(row){ const tot=(+c.qty||0)*(+c.unit||0); const cell=row.querySelector('.c-tot'); if(cell) cell.textContent='R$ '+Math.round(tot).toLocaleString('pt-BR'); }
+  const t=comprasTotals();
+  document.getElementById('c-total').textContent='R$ '+Math.round(t.total).toLocaleString('pt-BR');
+  document.getElementById('c-bought').textContent='R$ '+Math.round(t.bought).toLocaleString('pt-BR');
+  document.getElementById('c-left').textContent='R$ '+Math.round(t.left).toLocaleString('pt-BR');
+  syncComprasToBudget();
+}
+
+document.getElementById('c-rows').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList.contains('ged') && t.dataset.ci!==undefined) editCompra(+t.dataset.ci,t.dataset.f,t.value);
+});
+document.getElementById('c-rows').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.classList.contains('c-check') && t.dataset.ci!==undefined){ const c=COMPRAS[+t.dataset.ci]; c.bought=t.checked; logChange('compras',`${c.item} · ${t.checked?'marcado como comprado':'desmarcado'}`,'',''); persistCompras(); renderCompras(); syncComprasToBudget(); }
+});
+document.getElementById('c-rows').addEventListener('click',e=>{
+  if(e.target.dataset.cremove!==undefined){ const i=+e.target.dataset.cremove; if(confirm('Remover "'+COMPRAS[i].item+'" da lista?')){ logChange('compras','item removido',COMPRAS[i].item,''); COMPRAS.splice(i,1); persistCompras(); renderCompras(); syncComprasToBudget(); } }
+});
+document.getElementById('cp-add').onclick=()=>{
+  const item=document.getElementById('cp-item').value.trim();
+  const qty=parseFloat(document.getElementById('cp-qty').value)||1;
+  const cat=document.getElementById('cp-unit').value.trim()||'Outros';
+  if(!item){ alert('Digite o nome do item.'); return; }
+  COMPRAS.push({item,qty,cat,unit:0,bought:false});
+  logChange('compras','item adicionado','',item);
+  document.getElementById('cp-item').value=''; document.getElementById('cp-qty').value=''; document.getElementById('cp-unit').value='';
+  persistCompras(); renderCompras(); syncComprasToBudget();
+};
+
+renderCompras();
+syncComprasToBudget();
 
 </script>
 </body>
